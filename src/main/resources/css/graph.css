@@ -1,0 +1,29 @@
+graph {
+
+}
+
+node {
+    size: 25px;
+    fill-color: #3F3F3F, #000000;
+    fill-mode: gradient-radial;
+
+    text-background-mode: plain;
+    text-background-color: #EB2;
+    text-alignment: under;
+    text-size: 14px;
+}
+
+node:clicked {
+    size: 32px;
+    fill-color: #FF0000;
+}
+
+edge {
+    size: 3px;
+    fill-color: #3F3F3F;
+
+    text-background-mode: plain;
+    text-background-color: #EB2;
+    text-alignment: under;
+    text-size: 12px;
+}
