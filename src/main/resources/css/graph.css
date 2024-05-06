@@ -8,7 +8,7 @@ node {
     fill-mode: gradient-radial;
 
     text-background-mode: plain;
-    text-background-color: #EB2;
+    text-background-color: #EE4E22;
     text-alignment: under;
     text-size: 14px;
 }
@@ -23,7 +23,7 @@ edge {
     fill-color: #3F3F3F;
 
     text-background-mode: plain;
-    text-background-color: #EB2;
-    text-alignment: under;
+    text-background-color: #EEBB22;
+    text-alignment: along;
     text-size: 12px;
 }

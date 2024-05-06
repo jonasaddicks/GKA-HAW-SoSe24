@@ -10,7 +10,7 @@ public class GKAClient {
         System.setProperty("org.graphstream.ui", "swing");
 
         GraphBuilder graphBuilder = GraphBuilder.getInstance();
-        Graph graph = graphBuilder.buildGraph(ResourceLoadHelper.loadResource("graphs/graph01.gka"), ResourceLoadHelper.loadResource("css/graph.css"));
+        Graph graph = graphBuilder.buildGraph(ResourceLoadHelper.loadResource("graphs/graph01.gka"), ResourceLoadHelper.loadResource("css/graph.css"), 15);
         graph.display();
     }
 }

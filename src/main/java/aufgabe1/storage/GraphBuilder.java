@@ -5,6 +5,7 @@ import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.MultiGraph;
 
+import javax.swing.plaf.basic.BasicDesktopIconUI;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -21,11 +22,13 @@ public class GraphBuilder {
 
     private final Pattern EDGE_PATTERN = Pattern.compile("(?<node1>[\\wäöü]+)\\s*?(?<directed>->|--)\\s*?(?<node2>[\\wäöü]+)\\s*?\\(?(?<attribute>\\w*?)\\)?\\s*?:?\\s*?(?<weight>\\d*?)?\\s*?;");
     private List<Graph> graphBuilds;
+    private int edgeID;
 
 
 
     private GraphBuilder() {
         graphBuilds = new ArrayList<>();
+        edgeID = -1;
     }
 
     public static GraphBuilder getInstance() {
@@ -36,7 +39,11 @@ public class GraphBuilder {
     }
 
     public Graph buildGraph(URI graphURI, URI styleSheet) throws MalformedURLException {
-        GraphTemplate template = buildTemplate(graphURI);
+        return buildGraph(graphURI, styleSheet, 0);
+    }
+
+    public Graph buildGraph(URI graphURI, URI styleSheet, int properties) throws MalformedURLException {
+        GraphTemplate template = buildTemplate(graphURI, properties);
 
         Graph graph = new MultiGraph(template.getName(), false, true);
         graph.setAttribute("ui.stylesheet", String.format("url('%s')", styleSheet.toURL()));
@@ -47,20 +54,34 @@ public class GraphBuilder {
 
         for (GraphEdge templateEdge : template.getGraphEdges()) {
             node1 = graph.addNode(templateEdge.getNode1());
-            node1.setAttribute("ui.label", templateEdge.getNode1());
             node2 = graph.addNode(templateEdge.getNode2());
-            node2.setAttribute("ui.label", templateEdge.getNode2());
-            edge = graph.addEdge(UUID.randomUUID().toString(), node1, node2, templateEdge.isDirected());
+            edge = graph.addEdge(Integer.toString(++edgeID), node1, node2, templateEdge.isDirected());
+
+            if (template.isDisplayNodeAttribute()) {
+                node1.setAttribute("ui.label", templateEdge.getNode1());
+                node2.setAttribute("ui.label", templateEdge.getNode2());
+            }
+
+            edge.setAttribute("ui.label", buildEdgeAttribute(template, templateEdge));
+            System.out.println(templateEdge);
             //TODO
         }
-        System.out.println(template);
 
+        graphBuilds.add(graph);
         return graph;
     }
 
-    private GraphTemplate buildTemplate(URI graphURI) {
+    private String buildEdgeAttribute(GraphTemplate template, GraphEdge templateEdge) {
+        return String.format("%s%s%s",
+                (template.isDisplayEdgeAttribute()) ? templateEdge.getEdgeAttribute() : "",
+                (template.isDisplayWeight()) ? " weight:" + templateEdge.getWeight() : "",
+                (template.isDisplayEdgeID()) ? " id:" + edgeID : ""
+        );
+    }
 
-        GraphTemplate graphTemplate = new GraphTemplate(graphURI.getPath());
+    private GraphTemplate buildTemplate(URI graphURI, int properties) {
+
+        GraphTemplate graphTemplate = new GraphTemplate(graphURI.getPath(), properties);
 
         try {
             FileInputStream edgeStream = new FileInputStream(graphURI.getPath());
@@ -79,7 +100,7 @@ public class GraphBuilder {
                                 case "->" -> true;
                                 default -> throw new IllegalArgumentException(String.format("graph type '%s' not allowed", matcher.group("directed")));
                             },
-                            (!matcher.group("weight").isEmpty()) ? Integer.valueOf(matcher.group("weight")) : null,
+                            (!matcher.group("weight").isEmpty()) ? Integer.parseInt(matcher.group("weight")) : 1,
                             matcher.group("attribute")
                     );
                 }
