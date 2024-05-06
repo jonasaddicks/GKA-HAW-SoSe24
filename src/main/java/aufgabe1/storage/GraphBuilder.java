@@ -5,7 +5,6 @@ import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.MultiGraph;
 
-import javax.swing.plaf.basic.BasicDesktopIconUI;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -20,16 +19,13 @@ public class GraphBuilder {
 
     private static GraphBuilder INSTANCE;
 
-    private final Pattern EDGE_PATTERN = Pattern.compile("(?<node1>[\\wäöü]+)\\s*?(?<directed>->|--)\\s*?(?<node2>[\\wäöü]+)\\s*?\\(?(?<attribute>\\w*?)\\)?\\s*?:?\\s*?(?<weight>\\d*?)?\\s*?;");
-    private List<Graph> graphBuilds;
-    private int edgeID;
+    private final Pattern EDGE_PATTERN = Pattern.compile("(?<node1>[\\wäöü]+)\\s*?(?<directed>->|--)\\s*?(?<node2>[\\wäöü]+)\\s*?\\(?(?<attribute>[\\wäöü]*?)\\)?\\s*?:?\\s*?(?<weight>\\d*?)?\\s*?;");
+    private List<Graph> graphBuilds = new ArrayList<>();
+    private int edgeID = -1;
 
 
 
-    private GraphBuilder() {
-        graphBuilds = new ArrayList<>();
-        edgeID = -1;
-    }
+    private GraphBuilder() {}
 
     public static GraphBuilder getInstance() {
         if (INSTANCE == null) {
@@ -38,40 +34,45 @@ public class GraphBuilder {
         return INSTANCE;
     }
 
-    public Graph buildGraph(URI graphURI, URI styleSheet) throws MalformedURLException {
-        return buildGraph(graphURI, styleSheet, 0);
+
+
+    public Graph buildGraphFromFile(URI graphURI, URI styleSheet) throws MalformedURLException {
+        return buildGraphFromFile(graphURI, styleSheet, 0);
     }
 
-    public Graph buildGraph(URI graphURI, URI styleSheet, int properties) throws MalformedURLException {
+    public Graph buildGraphFromFile(URI graphURI, URI styleSheet, int properties) throws MalformedURLException {
         GraphTemplate template = buildTemplate(graphURI, properties);
+        return buildGraphFromTemplate(styleSheet, template);
+    }
 
-        Graph graph = new MultiGraph(template.getName(), false, true);
+    public Graph buildGraphFromTemplate(URI styleSheet, GraphTemplate graphTemplate) throws MalformedURLException {
+        Graph graph = new MultiGraph(graphTemplate.getName(), false, true);
         graph.setAttribute("ui.stylesheet", String.format("url('%s')", styleSheet.toURL()));
 
         Node node1;
         Node node2;
         Edge edge;
 
-        for (GraphEdge templateEdge : template.getGraphEdges()) {
+        for (GraphEdge templateEdge : graphTemplate.getGraphEdges()) {
             node1 = graph.addNode(templateEdge.getNode1());
             node2 = graph.addNode(templateEdge.getNode2());
-            edge = graph.addEdge(Integer.toString(++edgeID), node1, node2, templateEdge.isDirected());
+            edge = graph.addEdge(Integer.toString(++edgeID), templateEdge.getNode1(), templateEdge.getNode2(), templateEdge.isDirected());
 
-            if (template.isDisplayNodeAttribute()) {
+            if (graphTemplate.isDisplayNodeAttribute()) {
                 node1.setAttribute("ui.label", templateEdge.getNode1());
                 node2.setAttribute("ui.label", templateEdge.getNode2());
             }
 
-            edge.setAttribute("ui.label", buildEdgeAttribute(template, templateEdge));
+            edge.setAttribute("weight", templateEdge.getWeight());
+            edge.setAttribute("ui.label", getEdgeAttribute(graphTemplate, templateEdge));
             System.out.println(templateEdge);
-            //TODO
         }
 
         graphBuilds.add(graph);
         return graph;
     }
 
-    private String buildEdgeAttribute(GraphTemplate template, GraphEdge templateEdge) {
+    private String getEdgeAttribute(GraphTemplate template, GraphEdge templateEdge) {
         return String.format("%s%s%s",
                 (template.isDisplayEdgeAttribute()) ? templateEdge.getEdgeAttribute() : "",
                 (template.isDisplayWeight()) ? " weight:" + templateEdge.getWeight() : "",
@@ -100,14 +101,14 @@ public class GraphBuilder {
                                 case "->" -> true;
                                 default -> throw new IllegalArgumentException(String.format("graph type '%s' not allowed", matcher.group("directed")));
                             },
-                            (!matcher.group("weight").isEmpty()) ? Integer.parseInt(matcher.group("weight")) : 1,
+                            !matcher.group("weight").isEmpty() ? Integer.parseInt(matcher.group("weight")) : 1,
                             matcher.group("attribute")
                     );
                 }
             }
             graphTemplate.setDirected();
 
-        } catch (IOException e) {
+        } catch (IOException | NumberFormatException e) {
             e.printStackTrace();
         }
         return graphTemplate;

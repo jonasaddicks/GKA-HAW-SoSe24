@@ -18,6 +18,8 @@ public class GraphEdge {
         this.edgeAttribute = edgeAttribute;
     }
 
+
+
     public String getNode1() {
         return node1;
     }

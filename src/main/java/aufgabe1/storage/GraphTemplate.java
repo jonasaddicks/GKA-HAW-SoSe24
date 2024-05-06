@@ -1,5 +1,6 @@
 package aufgabe1.storage;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,13 +8,17 @@ public class GraphTemplate {
 
     private final String name;
     private boolean directed;
-    private final List<GraphEdge> graphEdges;
+    private final List<GraphEdge> graphEdges = new ArrayList<>();
+    private final String fileType = "gka";
+    private final String saveDirectory = "src\\main\\resources\\graphs\\";
 
     private final int propertyInt;
     private final boolean displayNodeAttribute;
     private final boolean displayWeight;
     private final boolean displayEdgeAttribute;
     private final boolean displayEdgeID;
+
+
 
     public GraphTemplate(String name) {
         this(name, 0);
@@ -28,18 +33,24 @@ public class GraphTemplate {
         this.displayWeight = ((properties >> 2) & 1) == 1;              //bit 2 for displayWeight property (2^2)
         this.displayEdgeAttribute = ((properties >> 1) & 1) == 1;       //bit 1 for displayEdgeAttribute (2^1)
         this.displayEdgeID = (properties & 1) == 1;                     //bit 0 for displayEdgeID (2^0)
-
-        this.graphEdges = new ArrayList<>();
     }
 
-    public void addEdge(String node1, String node2, boolean directed, Integer weight, String edgeAttribute) {
-        graphEdges.add(new GraphEdge(node1, node2, directed, weight, edgeAttribute));
+    public void saveTemplate(){
+        File newGraphFile = new File(String.format("%s%s.%s", saveDirectory, name, fileType));
+        System.out.println(newGraphFile);
+        System.out.println(newGraphFile.getAbsolutePath());
     }
+
+
 
     public void setDirected() {
         if (!graphEdges.isEmpty()) {
             this.directed = graphEdges.getFirst().isDirected();
         }
+    }
+
+    public void addEdge(String node1, String node2, boolean directed, Integer weight, String edgeAttribute) {
+        graphEdges.add(new GraphEdge(node1, node2, directed, weight, edgeAttribute));
     }
 
     public String getName(){

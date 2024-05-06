@@ -2,6 +2,8 @@ package aufgabe1.storage;
 
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.implementations.MultiGraph;
+import org.graphstream.ui.view.View;
+import org.graphstream.ui.view.Viewer;
 
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -10,38 +12,37 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class GraphReader {
+public class GraphSandbox {
 
-    private static GraphReader INSTANCE;
+    private static GraphSandbox INSTANCE;
 
-    private Pattern EDGE_PATTERN = Pattern.compile("(?<node1>[\\wäöü]+)\\s*?(?<directed>-|>)\\s*?(?<node2>[\\wäöü]+)\\s*?(?<attribute>[\\wäöü]*?)\\s*?:?\\s*?(?<weight>\\d*?);");
+    private final Pattern EDGE_PATTERN = Pattern.compile("(?<node1>[\\wäöü]+)\\s*?(?<directed>[->])\\s*?(?<node2>[\\wäöü]+)\\s*?(?<attribute>[\\wäöü]*?)\\s*?:?\\s*?(?<weight>\\d*?);");
     private final Scanner scanner = new Scanner(System.in);
 
 
 
-    private GraphReader() {}
+    private GraphSandbox() {}
 
-    public static GraphReader getInstance() {
+    public static GraphSandbox getInstance() {
         if (INSTANCE == null) {
-            INSTANCE = new GraphReader();
+            INSTANCE = new GraphSandbox();
         }
         return INSTANCE;
     }
 
 
 
-    public void readGraph(URI styleSheet) throws MalformedURLException {
+    public void buildTemplateFromSandbox(URI styleSheet) throws MalformedURLException {
         Graph graph = new MultiGraph("sandbox", false, true);
         graph.setAttribute("ui.stylesheet", String.format("url('%s')", styleSheet.toURL()));
-        graph.display();
 
-        System.out.printf("name: ");
+        System.out.print("name: ");
         GraphTemplate template = new GraphTemplate(scanner.nextLine());
 
-        System.out.printf("format: \"<Node1> [-/>] <Node2> <attribute> : <weight>;\" type \"quit\" to finish%n");
+        System.out.printf("format: \"<Node1> [-/>] <Node2> <attribute> : <weight>;\" type \"exit\" to quit%n");
         String edgeLine;
         Matcher matcher;
-        while(!(edgeLine = scanner.nextLine()).equals("quit")) {
+        while(!(edgeLine = scanner.nextLine()).equals("exit")) {
             matcher = EDGE_PATTERN.matcher(edgeLine);
             if(matcher.find()) {
 
@@ -52,34 +53,16 @@ public class GraphReader {
                     case ">" -> true;
                     default -> throw new IllegalArgumentException(String.format("graph type '%s' not allowed", matcher.group("directed")));
                 };
-                int weight;
-                String attribute;
+                int weight = !matcher.group("weight").isEmpty() ? Integer.parseInt(matcher.group("weight")) : 1;
+                String attribute = matcher.group("attribute");
 
-                graph.addEdge(
-                        UUID.randomUUID().toString(),
-                        matcher.group("node1"),
-                        matcher.group("node2"),
-                        switch (matcher.group("directed")) {
-                        case "-" -> false;
-                        case ">" -> true;
-                        default -> throw new IllegalArgumentException(String.format("graph type '%s' not allowed", matcher.group("directed")));
-                });
-
-                template.addEdge(
-                        matcher.group("node1"),
-                        matcher.group("node2"),
-                        switch (matcher.group("directed")) {
-                            case "-" -> false;
-                            case ">" -> true;
-                            default -> throw new IllegalArgumentException(String.format("graph type '%s' not allowed", matcher.group("directed")));
-                        },
-                        !matcher.group("weight").isEmpty() ? Integer.parseInt(matcher.group("weight")) : 1,
-                        matcher.group("attribute"));
+                graph.addEdge(UUID.randomUUID().toString(), node1, node2, directed);
+                template.addEdge(node1, node2, directed, weight, attribute);
             } else {
                 System.out.printf("wrong format: \"%s\" invalid%n", edgeLine);
             }
         }
-
         template.setDirected();
+        template.saveTemplate();
     }
 }
