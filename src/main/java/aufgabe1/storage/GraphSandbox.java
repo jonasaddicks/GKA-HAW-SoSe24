@@ -5,6 +5,7 @@ import org.graphstream.graph.implementations.MultiGraph;
 import org.graphstream.ui.view.View;
 import org.graphstream.ui.view.Viewer;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.Scanner;
@@ -32,9 +33,12 @@ public class GraphSandbox {
 
 
 
-    public void buildTemplateFromSandbox(URI styleSheet) throws MalformedURLException {
+    public void buildTemplateFromSandbox(URI styleSheet) throws IOException {
         Graph graph = new MultiGraph("sandbox", false, true);
         graph.setAttribute("ui.stylesheet", String.format("url('%s')", styleSheet.toURL()));
+
+        ViewerThread viewerThread = new ViewerThread(graph);
+        viewerThread.start();
 
         System.out.print("name: ");
         GraphTemplate template = new GraphTemplate(scanner.nextLine());
@@ -62,6 +66,7 @@ public class GraphSandbox {
                 System.out.printf("wrong format: \"%s\" invalid%n", edgeLine);
             }
         }
+        viewerThread.notifyViewer();
         template.setDirected();
         template.saveTemplate();
     }

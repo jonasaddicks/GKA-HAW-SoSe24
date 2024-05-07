@@ -6,6 +6,7 @@ import org.graphstream.ui.swing_viewer.SwingViewer;
 import org.graphstream.ui.view.Viewer;
 
 import javax.swing.*;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 
@@ -15,7 +16,12 @@ public class GKAClient {
         System.setProperty("org.graphstream.ui", "swing");
 
         GraphSandbox graphReader = GraphSandbox.getInstance();
-        graphReader.buildTemplateFromSandbox(ResourceLoadHelper.loadResource("css/graph.css"));
+        try {
+            graphReader.buildTemplateFromSandbox(ResourceLoadHelper.loadResource("css/graph.css"));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
 //        GraphBuilder graphBuilder = GraphBuilder.getInstance();
 //        Graph graph = graphBuilder.buildGraphFromFile(ResourceLoadHelper.loadResource("graphs/graph01.gka"), ResourceLoadHelper.loadResource("css/graph.css"), 15);

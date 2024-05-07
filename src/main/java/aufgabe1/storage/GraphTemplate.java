@@ -1,6 +1,7 @@
 package aufgabe1.storage;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,10 +36,11 @@ public class GraphTemplate {
         this.displayEdgeID = (properties & 1) == 1;                     //bit 0 for displayEdgeID (2^0)
     }
 
-    public void saveTemplate(){
+    public void saveTemplate() throws IOException {
         File newGraphFile = new File(String.format("%s%s.%s", saveDirectory, name, fileType));
-        System.out.println(newGraphFile);
-        System.out.println(newGraphFile.getAbsolutePath());
+        if (!newGraphFile.createNewFile()) {
+            System.out.printf("error: file \"%s.%s\" already exists%n", name, fileType);
+        }
     }
 
 
