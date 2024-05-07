@@ -20,6 +20,7 @@ public class GraphBuilder {
     private static GraphBuilder INSTANCE;
 
     private final Pattern EDGE_PATTERN = Pattern.compile("(?<node1>[\\wäöü]+)\\s*?(?<directed>->|--)\\s*?(?<node2>[\\wäöü]+)\\s*?\\(?(?<attribute>[\\wäöü]*?)\\)?\\s*?:?\\s*?(?<weight>\\d*?)?\\s*?;");
+    private final int STANDARD_WEIGHT = 0;
     private List<Graph> graphBuilds = new ArrayList<>();
     private int edgeID = -1;
 
@@ -101,7 +102,7 @@ public class GraphBuilder {
                                 case "->" -> true;
                                 default -> throw new IllegalArgumentException(String.format("graph type '%s' not allowed", matcher.group("directed")));
                             },
-                            !matcher.group("weight").isEmpty() ? Integer.parseInt(matcher.group("weight")) : 1,
+                            !matcher.group("weight").isEmpty() ? Integer.parseInt(matcher.group("weight")) : STANDARD_WEIGHT,
                             matcher.group("attribute")
                     );
                 }

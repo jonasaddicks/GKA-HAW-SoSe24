@@ -1,4 +1,4 @@
-package aufgabe1.storage;
+package aufgabe1.view.thread;
 
 import org.graphstream.graph.Graph;
 import org.graphstream.ui.view.Viewer;
@@ -10,6 +10,7 @@ public class ViewerThread extends Thread {
 
     public ViewerThread(Graph displayGraph) {
         this.displayGraph = displayGraph;
+        this.start();
     }
 
     @Override
@@ -21,7 +22,7 @@ public class ViewerThread extends Thread {
         catch (InterruptedException e) { e.printStackTrace(); }
     }
 
-    public synchronized void closeViewer() throws InterruptedException {
+    private synchronized void closeViewer() throws InterruptedException {
         this.wait();
         viewer.close();
     }

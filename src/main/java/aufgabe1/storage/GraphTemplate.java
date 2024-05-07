@@ -1,17 +1,21 @@
 package aufgabe1.storage;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.FileAlreadyExistsException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class GraphTemplate {
 
     private final String name;
     private boolean directed;
     private final List<GraphEdge> graphEdges = new ArrayList<>();
-    private final String fileType = "gka";
-    private final String saveDirectory = "src\\main\\resources\\graphs\\";
+    private static final String FILE_TYPE = "gka";
+    private static final String SAVE_DIRECTORY = "src\\main\\resources\\graphs\\";
 
     private final int propertyInt;
     private final boolean displayNodeAttribute;
@@ -37,9 +41,21 @@ public class GraphTemplate {
     }
 
     public void saveTemplate() throws IOException {
-        File newGraphFile = new File(String.format("%s%s.%s", saveDirectory, name, fileType));
+        File newGraphFile = new File(String.format("%s%s.%s", SAVE_DIRECTORY, name, FILE_TYPE));
         if (!newGraphFile.createNewFile()) {
-            System.out.printf("error: file \"%s.%s\" already exists%n", name, fileType);
+            System.out.printf("error: file \"%s.%s\" already exists%n", name, FILE_TYPE);
+        } else {
+            BufferedWriter saver = new BufferedWriter(new FileWriter(newGraphFile));
+            for (GraphEdge graphEdge : graphEdges) {
+                saver.write(String.format("%s %s %s%s%s;%n",
+                        graphEdge.getNode1(),
+                        (graphEdge.isDirected()) ? "->" : "--",
+                        graphEdge.getNode2(),
+                        graphEdge.getEdgeAttribute().isEmpty() || Objects.isNull(graphEdge.getEdgeAttribute()) ? "" : String.format(" (%s)", graphEdge.getEdgeAttribute()),
+                        graphEdge.getWeight() != 0 ? String.format(" : %d", graphEdge.getWeight()) : ""
+                ));
+            }
+            saver.close();
         }
     }
 

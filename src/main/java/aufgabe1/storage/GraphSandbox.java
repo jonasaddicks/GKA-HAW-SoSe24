@@ -1,12 +1,10 @@
 package aufgabe1.storage;
 
+import aufgabe1.view.thread.ViewerThread;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.implementations.MultiGraph;
-import org.graphstream.ui.view.View;
-import org.graphstream.ui.view.Viewer;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.Scanner;
 import java.util.UUID;
@@ -17,8 +15,9 @@ public class GraphSandbox {
 
     private static GraphSandbox INSTANCE;
 
-    private final Pattern EDGE_PATTERN = Pattern.compile("(?<node1>[\\wäöü]+)\\s*?(?<directed>[->])\\s*?(?<node2>[\\wäöü]+)\\s*?(?<attribute>[\\wäöü]*?)\\s*?:?\\s*?(?<weight>\\d*?);");
-    private final Scanner scanner = new Scanner(System.in);
+    private static final Pattern EDGE_PATTERN = Pattern.compile("(?<node1>[\\wäöü]+)\\s*?(?<directed>[->])\\s*?(?<node2>[\\wäöü]+)\\s*?(?<attribute>[\\wäöü]*?)\\s*?:?\\s*?(?<weight>\\d*?);");
+    private static final Scanner SCANNER = new Scanner(System.in);
+    private static final int STANDARD_WEIGHT = 0;
 
 
 
@@ -38,15 +37,14 @@ public class GraphSandbox {
         graph.setAttribute("ui.stylesheet", String.format("url('%s')", styleSheet.toURL()));
 
         ViewerThread viewerThread = new ViewerThread(graph);
-        viewerThread.start();
 
         System.out.print("name: ");
-        GraphTemplate template = new GraphTemplate(scanner.nextLine());
+        GraphTemplate template = new GraphTemplate(SCANNER.nextLine());
 
         System.out.printf("format: \"<Node1> [-/>] <Node2> <attribute> : <weight>;\" type \"exit\" to quit%n");
         String edgeLine;
         Matcher matcher;
-        while(!(edgeLine = scanner.nextLine()).equals("exit")) {
+        while(!(edgeLine = SCANNER.nextLine()).equals("exit")) {
             matcher = EDGE_PATTERN.matcher(edgeLine);
             if(matcher.find()) {
 
@@ -57,7 +55,7 @@ public class GraphSandbox {
                     case ">" -> true;
                     default -> throw new IllegalArgumentException(String.format("graph type '%s' not allowed", matcher.group("directed")));
                 };
-                int weight = !matcher.group("weight").isEmpty() ? Integer.parseInt(matcher.group("weight")) : 1;
+                int weight = !matcher.group("weight").isEmpty() ? Integer.parseInt(matcher.group("weight")) : STANDARD_WEIGHT;
                 String attribute = matcher.group("attribute");
 
                 graph.addEdge(UUID.randomUUID().toString(), node1, node2, directed);
