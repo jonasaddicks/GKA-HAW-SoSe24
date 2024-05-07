@@ -1,5 +1,5 @@
 graph {
-
+    padding: 75px;
 }
 
 node {
@@ -7,7 +7,7 @@ node {
     fill-color: #3F3F3F, #000000;
     fill-mode: gradient-radial;
 
-    text-background-mode: plain;
+    text-background-mode: rounded-box;
     text-background-color: #EE4E22;
     text-alignment: under;
     text-size: 14px;
@@ -22,8 +22,9 @@ edge {
     size: 3px;
     fill-color: #3F3F3F;
 
-    text-background-mode: plain;
+    text-background-mode: rounded-box;
     text-background-color: #EEBB22;
     text-alignment: along;
     text-size: 12px;
+    text-offset: 0px, -13px;
 }

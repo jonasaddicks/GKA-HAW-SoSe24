@@ -23,6 +23,7 @@ public class GraphBuilder {
     private final int STANDARD_WEIGHT = 0;
     private List<Graph> graphBuilds = new ArrayList<>();
     private int edgeID = -1;
+    private int nodeID = 0;
 
 
 
@@ -47,7 +48,7 @@ public class GraphBuilder {
     }
 
     public Graph buildGraphFromTemplate(URI styleSheet, GraphTemplate graphTemplate) throws MalformedURLException {
-        Graph graph = new MultiGraph(graphTemplate.getName(), false, true);
+        Graph graph = new MultiGraph(graphTemplate.getName(), false, false);
         graph.setAttribute("ui.stylesheet", String.format("url('%s')", styleSheet.toURL()));
 
         Node node1;
@@ -56,12 +57,14 @@ public class GraphBuilder {
 
         for (GraphEdge templateEdge : graphTemplate.getGraphEdges()) {
             node1 = graph.addNode(templateEdge.getNode1());
+            if (Objects.isNull(node1.getAttribute("id"))) {node1.setAttribute("id", nodeID++);}
             node2 = graph.addNode(templateEdge.getNode2());
+            if (Objects.isNull(node2.getAttribute("id"))) {node2.setAttribute("id", nodeID++);}
             edge = graph.addEdge(Integer.toString(++edgeID), templateEdge.getNode1(), templateEdge.getNode2(), templateEdge.isDirected());
 
             if (graphTemplate.isDisplayNodeAttribute()) {
-                node1.setAttribute("ui.label", templateEdge.getNode1());
-                node2.setAttribute("ui.label", templateEdge.getNode2());
+                node1.setAttribute("ui.label", String.format("%s id:%s", templateEdge.getNode1(), node1.getAttribute("id")));
+                node2.setAttribute("ui.label", String.format("%s id:%s", templateEdge.getNode2(), node2.getAttribute("id")));
             }
 
             edge.setAttribute("weight", templateEdge.getWeight());

@@ -2,6 +2,7 @@ import aufgabe1.storage.GraphBuilder;
 import aufgabe1.storage.GraphSandbox;
 import aufgabe1.view.thread.ViewerThread;
 import org.graphstream.graph.Graph;
+import org.graphstream.graph.Node;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -9,6 +10,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Objects;
 import java.util.Scanner;
+
+import static aufgabe1.algs.BreadthFirstSearch.shortestPathBFS;
 
 public class GKAClient {
 
@@ -35,7 +38,7 @@ public class GKAClient {
     public static void shell() {
         String command;
         System.out.println("type \"quit\" to terminate");
-        System.out.println("choose between \"sandbox\" and \"display\"");
+        System.out.println("options: \"sandbox\", \"display\", \"algorithm\"");
         while (!(command = PROMPT.nextLine()).equals("quit")) {
 
             switch (command) {
@@ -56,7 +59,7 @@ public class GKAClient {
 //                    close();
 //                    break;
 
-                default: System.out.printf("unknown command: \"%s\"", command);
+                default: System.out.printf("unknown command: \"%s\"%n", command);
             }
         }
         System.exit(0);
@@ -99,14 +102,23 @@ public class GKAClient {
             switch (algorithm) {
 
                 case "bfs":
+                    bfs();
                     break;
 
-                default: System.out.printf("\"%s\" is no valid algorithm");
+                default: System.out.printf("\"%s\" is no valid algorithm%n");
             }
 
         } else {
             System.out.println("no graph to work with");
         }
+    }
+
+    private static void bfs() {
+        System.out.print("Node s: ");
+        Node node1 = workingGraph.getNode(PROMPT.nextLine());
+        System.out.print("Node t: ");
+        Node node2 = workingGraph.getNode(PROMPT.nextLine());
+        shortestPathBFS(workingGraph, node1, node2);
     }
 
     private static void close() {
