@@ -26,6 +26,12 @@ public class BreadthFirstSearch {
 
 
     public static synchronized LinkedList<Node> shortestPathBFS(Graph graph, Node s, Node t) {
+        if (s.equals(t)) {
+            path = new LinkedList<>();
+            path.addFirst(s);
+            return path;
+        }
+
         workingGraph = graph;
         startNode = s;
         endNode = t;

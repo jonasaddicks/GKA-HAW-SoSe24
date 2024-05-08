@@ -125,9 +125,9 @@ public class GKAClient {
             LinkedList<Node> path = shortestPathBFS(workingGraph, node1, node2);
             System.out.println(Objects.isNull(path) ? "No path found" : path);
 
-            LinkedList<Node> copyPath = new LinkedList<>(path);
+            LinkedList<Node> copyPath = (Objects.nonNull(path)) ? new LinkedList<>(path) : new LinkedList<>();
 
-            if (!copyPath.isEmpty()) {
+            if (copyPath.size() > 1) {
                 Node predNode = copyPath.poll();
                 predNode.setAttribute("ui.class", "start");
                 Node currentNode;

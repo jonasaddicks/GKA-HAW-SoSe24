@@ -19,11 +19,11 @@ public class GraphBuilder {
 
     private static GraphBuilder INSTANCE;
 
-    private final Pattern EDGE_PATTERN = Pattern.compile("(?<node1>[\\wäöü]+)\\s*?(?<directed>->|--)\\s*?(?<node2>[\\wäöü]+)\\s*?\\(?(?<attribute>[\\wäöü]*?)\\)?\\s*?:?\\s*?(?<weight>\\d*?)?\\s*?;");
+    private final Pattern EDGE_PATTERN = Pattern.compile("(?<node1>[\\wäöü]+)(\\s*?(?<directed>->|--)\\s*?(?<node2>[\\wäöü]+))?(\\s*?\\(?(?<attribute>[\\wäöü]*?)\\)?\\s*?:?\\s*?(?<weight>\\d*?)?\\s*?)?;");
     private final int STANDARD_WEIGHT = 0;
     private List<Graph> graphBuilds = new ArrayList<>();
-    private int edgeID = -1;
-    private int nodeID = 0;
+    private int edgeID;
+    private int nodeID;
 
 
 
@@ -48,6 +48,9 @@ public class GraphBuilder {
     }
 
     public Graph buildGraphFromTemplate(URI styleSheet, GraphTemplate graphTemplate) throws MalformedURLException {
+        nodeID = 0;
+        edgeID = -1;
+
         Graph graph = new MultiGraph(graphTemplate.getName(), false, false);
         graph.setAttribute("ui.stylesheet", String.format("url('%s')", styleSheet.toURL()));
 
@@ -56,20 +59,36 @@ public class GraphBuilder {
         Edge edge;
 
         for (GraphEdge templateEdge : graphTemplate.getGraphEdges()) {
-            node1 = graph.addNode(templateEdge.getNode1());
-            if (Objects.isNull(node1.getAttribute("id"))) {node1.setAttribute("id", nodeID++);}
-            node2 = graph.addNode(templateEdge.getNode2());
-            if (Objects.isNull(node2.getAttribute("id"))) {node2.setAttribute("id", nodeID++);}
-            edge = graph.addEdge(Integer.toString(++edgeID), templateEdge.getNode1(), templateEdge.getNode2(), templateEdge.isDirected());
-            if (templateEdge.isDirected()) {edge.setAttribute("goalNode", node2);}
+            if (Objects.nonNull(templateEdge.getNode2())) {
+                node1 = graph.addNode(templateEdge.getNode1());
+                if (Objects.isNull(node1.getAttribute("id"))) {
+                    node1.setAttribute("id", nodeID++);
+                }
+                node2 = graph.addNode(templateEdge.getNode2());
+                if (Objects.isNull(node2.getAttribute("id"))) {
+                    node2.setAttribute("id", nodeID++);
+                }
+                edge = graph.addEdge(Integer.toString(++edgeID), templateEdge.getNode1(), templateEdge.getNode2(), templateEdge.isDirected());
+                if (templateEdge.isDirected()) {
+                    edge.setAttribute("goalNode", node2);
+                }
 
-            if (graphTemplate.isDisplayNodeAttribute()) {
-                node1.setAttribute("ui.label", String.format("%s id:%s", templateEdge.getNode1(), node1.getAttribute("id")));
-                node2.setAttribute("ui.label", String.format("%s id:%s", templateEdge.getNode2(), node2.getAttribute("id")));
+                if (graphTemplate.isDisplayNodeAttribute()) {
+                    node1.setAttribute("ui.label", String.format("%s id:%s", templateEdge.getNode1(), node1.getAttribute("id")));
+                    node2.setAttribute("ui.label", String.format("%s id:%s", templateEdge.getNode2(), node2.getAttribute("id")));
+                }
+
+                edge.setAttribute("weight", templateEdge.getWeight());
+                edge.setAttribute("ui.label", getEdgeAttribute(graphTemplate, templateEdge));
+            } else {
+                node1 = graph.addNode(templateEdge.getNode1());
+                if (Objects.isNull(node1.getAttribute("id"))) {
+                    node1.setAttribute("id", nodeID++);
+                }
+                if (graphTemplate.isDisplayNodeAttribute()) {
+                    node1.setAttribute("ui.label", String.format("%s id:%s", templateEdge.getNode1(), node1.getAttribute("id")));
+                }
             }
-
-            edge.setAttribute("weight", templateEdge.getWeight());
-            edge.setAttribute("ui.label", getEdgeAttribute(graphTemplate, templateEdge));
         }
 
         graphBuilds.add(graph);
@@ -103,6 +122,8 @@ public class GraphBuilder {
                             switch (matcher.group("directed")) {
                                 case "--" -> false;
                                 case "->" -> true;
+                                case "" -> false;
+                                case null -> false;
                                 default -> throw new IllegalArgumentException(String.format("graph type '%s' not allowed", matcher.group("directed")));
                             },
                             !matcher.group("weight").isEmpty() ? Integer.parseInt(matcher.group("weight")) : STANDARD_WEIGHT,
