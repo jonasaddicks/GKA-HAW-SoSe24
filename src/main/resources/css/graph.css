@@ -13,6 +13,21 @@ node {
     text-size: 14px;
 }
 
+node.start {
+    size: 30px;
+    fill-color: #224EEE;
+}
+
+node.path {
+    size: 27px;
+    fill-color: #743891;
+}
+
+node.goal {
+    size: 30px;
+    fill-color: #224EEE;
+}
+
 node:clicked {
     size: 32px;
     fill-color: #FF0000;
@@ -27,4 +42,9 @@ edge {
     text-alignment: along;
     text-size: 12px;
     text-offset: 0px, -13px;
+}
+
+edge.path {
+    fill-color: #743891;
+    size: 5px;
 }

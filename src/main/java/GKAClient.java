@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.LinkedList;
 import java.util.Objects;
 import java.util.Scanner;
 
@@ -79,9 +80,9 @@ public class GKAClient {
     private static void display() {
         try {
             System.out.print("file: ");
-            String file = PROMPT.nextLine();
+            String file = PROMPT.nextLine().trim();
             System.out.printf("property bits as decimal in the following order: displayNodeAttribute - displayWeight - displayEdgeAttribute - displayEdgeID%nproperties: ");
-            int properties = Integer.parseInt(PROMPT.nextLine());
+            int properties = Integer.parseInt(PROMPT.nextLine().trim());
 
             workingGraph = BUILDER.buildGraphFromFile(ResourceLoadHelper.loadResource(String.format(GRAPHS_SAVES, file)), STYLESHEET, properties);
 //            if (Objects.nonNull(workingViewerThread)) {
@@ -97,7 +98,7 @@ public class GKAClient {
         if (Objects.nonNull(workingGraph)) {
             System.out.print("algorithm: ");
 
-            String algorithm = PROMPT.nextLine();
+            String algorithm = PROMPT.nextLine().trim();
 
             switch (algorithm) {
 
@@ -105,7 +106,7 @@ public class GKAClient {
                     bfs();
                     break;
 
-                default: System.out.printf("\"%s\" is no valid algorithm%n");
+                default: System.out.printf("\"%s\" is no valid algorithm%n", algorithm);
             }
 
         } else {
@@ -114,11 +115,50 @@ public class GKAClient {
     }
 
     private static void bfs() {
+
         System.out.print("Node s: ");
-        Node node1 = workingGraph.getNode(PROMPT.nextLine());
+        Node node1 = workingGraph.getNode(PROMPT.nextLine().trim());
         System.out.print("Node t: ");
-        Node node2 = workingGraph.getNode(PROMPT.nextLine());
-        shortestPathBFS(workingGraph, node1, node2);
+        Node node2 = workingGraph.getNode(PROMPT.nextLine().trim());
+
+        if (Objects.nonNull(node1) && Objects.nonNull(node2)) {
+            LinkedList<Node> path = shortestPathBFS(workingGraph, node1, node2);
+            System.out.println(Objects.isNull(path) ? "No path found" : path);
+
+            LinkedList<Node> copyPath = new LinkedList<>(path);
+
+            if (!copyPath.isEmpty()) {
+                Node predNode = copyPath.poll();
+                predNode.setAttribute("ui.class", "start");
+                Node currentNode;
+
+                for (currentNode = copyPath.poll(); !copyPath.isEmpty(); currentNode = copyPath.poll()) {
+                    predNode.getEdgeBetween(currentNode).setAttribute("ui.class", "path");
+                    currentNode.setAttribute("ui.class", "path");
+                    predNode = currentNode;
+                }
+                predNode.getEdgeBetween(currentNode).setAttribute("ui.class", "path");
+                currentNode.setAttribute("ui.class", "goal");
+
+                System.out.print("press enter to continue");
+                PROMPT.nextLine();
+
+                copyPath = new LinkedList<>(path);
+
+                predNode = copyPath.poll();
+                predNode.setAttribute("ui.class", "");
+
+                for (currentNode = copyPath.poll(); !copyPath.isEmpty(); currentNode = copyPath.poll()) {
+                    predNode.getEdgeBetween(currentNode).setAttribute("ui.class", "");
+                    currentNode.setAttribute("ui.class", (Object) "");
+                    predNode = currentNode;
+                }
+                predNode.getEdgeBetween(currentNode).setAttribute("ui.class", "");
+                currentNode.setAttribute("ui.class", "");
+            }
+        } else {
+            System.out.printf("Error - Node1: %s, Node2: %s%n", node1, node2);
+        }
     }
 
     private static void close() {
