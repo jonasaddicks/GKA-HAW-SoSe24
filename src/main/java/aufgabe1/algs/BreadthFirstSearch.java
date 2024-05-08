@@ -57,7 +57,6 @@ public class BreadthFirstSearch {
         }
 
         int id1 = (Integer)startNode.getAttribute("id");
-        System.out.printf("id1: %d, NodeCount: %d, pathIDTableLength: %d, pathNodeTableLength: %d%n", id1, workingGraph.getNodeCount(), pathIDTable.length, pathNodeTable.length);
         pathNodeTable[id1] = startNode;
         pathIDTable[id1][0] = 0;
         pathIDTable[id1][1] = id1;

@@ -70,7 +70,6 @@ public class GraphBuilder {
 
             edge.setAttribute("weight", templateEdge.getWeight());
             edge.setAttribute("ui.label", getEdgeAttribute(graphTemplate, templateEdge));
-            System.out.println(templateEdge);
         }
 
         graphBuilds.add(graph);
@@ -114,7 +113,7 @@ public class GraphBuilder {
             graphTemplate.setDirected();
 
         } catch (IOException | NumberFormatException e) {
-            e.printStackTrace();
+            System.err.printf("An Error occured: %s%n", e.getMessage());
         }
         return graphTemplate;
     }

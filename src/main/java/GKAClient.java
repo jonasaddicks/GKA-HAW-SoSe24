@@ -72,7 +72,7 @@ public class GKAClient {
         try {
             SANDBOX.buildTemplateFromSandbox(STYLESHEET);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.printf("An Error occured: %s%n", e.getMessage());
         }
         System.exit(0);
     }
@@ -90,7 +90,7 @@ public class GKAClient {
 //            }
             workingViewerThread = new ViewerThread(workingGraph);
         } catch (MalformedURLException  | URISyntaxException | NumberFormatException | NullPointerException e) {
-            e.printStackTrace();
+            System.err.printf("An Error occured: %s%n", e.getMessage());
         }
     }
 
