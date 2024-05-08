@@ -46,7 +46,7 @@ public class GraphTemplate {
             System.out.printf("error: file \"%s.%s\" already exists%n", name, FILE_TYPE);
         } else {
             BufferedWriter saver = new BufferedWriter(new FileWriter(newGraphFile));
-            for (GraphEdge graphEdge : graphEdges) {
+            for (GraphEdge graphEdge : graphEdges) { //iterate over every single edge in the template and write it to the file in the correct format
                 saver.write(String.format("%s %s %s%s%s;%n",
                         graphEdge.getNode1(),
                         (graphEdge.isDirected()) ? "->" : "--",

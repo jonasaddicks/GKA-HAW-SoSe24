@@ -29,7 +29,7 @@ public class GraphBuilder {
 
     private GraphBuilder() {}
 
-    public static GraphBuilder getInstance() {
+    public static GraphBuilder getInstance() { //singleton
         if (INSTANCE == null) {
             INSTANCE = new GraphBuilder();
         }
@@ -43,13 +43,13 @@ public class GraphBuilder {
     }
 
     public Graph buildGraphFromFile(URI graphURI, URI styleSheet, int properties) throws MalformedURLException {
-        GraphTemplate template = buildTemplate(graphURI, properties);
+        GraphTemplate template = buildTemplate(graphURI, properties); //builds a template from the file first to represent the abstract structure of the graph
         return buildGraphFromTemplate(styleSheet, template);
     }
 
     public Graph buildGraphFromTemplate(URI styleSheet, GraphTemplate graphTemplate) throws MalformedURLException {
-        nodeID = 0;
-        edgeID = -1;
+        nodeID = 0; //counter to be assigned as id to every new node
+        edgeID = -1; //counter to be assigned as id to every new edge
 
         Graph graph = new MultiGraph(graphTemplate.getName(), false, false);
         graph.setAttribute("ui.stylesheet", String.format("url('%s')", styleSheet.toURL()));
@@ -58,14 +58,14 @@ public class GraphBuilder {
         Node node2;
         Edge edge;
 
-        for (GraphEdge templateEdge : graphTemplate.getGraphEdges()) {
-            if (Objects.nonNull(templateEdge.getNode2())) {
+        for (GraphEdge templateEdge : graphTemplate.getGraphEdges()) { //iterate over every single edge in the template
+            if (Objects.nonNull(templateEdge.getNode2())) { //case: an edge between two nodes is to be added
                 node1 = graph.addNode(templateEdge.getNode1());
-                if (Objects.isNull(node1.getAttribute("id"))) {
+                if (Objects.isNull(node1.getAttribute("id"))) { //dont overwrite an existing id
                     node1.setAttribute("id", nodeID++);
                 }
                 node2 = graph.addNode(templateEdge.getNode2());
-                if (Objects.isNull(node2.getAttribute("id"))) {
+                if (Objects.isNull(node2.getAttribute("id"))) { //dont overwrite an existing id
                     node2.setAttribute("id", nodeID++);
                 }
                 edge = graph.addEdge(Integer.toString(++edgeID), templateEdge.getNode1(), templateEdge.getNode2(), templateEdge.isDirected());
@@ -80,9 +80,9 @@ public class GraphBuilder {
 
                 edge.setAttribute("weight", templateEdge.getWeight());
                 edge.setAttribute("ui.label", getEdgeAttribute(graphTemplate, templateEdge));
-            } else {
+            } else { //case: only one node without edge is to be added
                 node1 = graph.addNode(templateEdge.getNode1());
-                if (Objects.isNull(node1.getAttribute("id"))) {
+                if (Objects.isNull(node1.getAttribute("id"))) { //dont overwrite an existing id
                     node1.setAttribute("id", nodeID++);
                 }
                 if (graphTemplate.isDisplayNodeAttribute()) {
@@ -95,7 +95,7 @@ public class GraphBuilder {
         return graph;
     }
 
-    private String getEdgeAttribute(GraphTemplate template, GraphEdge templateEdge) {
+    private String getEdgeAttribute(GraphTemplate template, GraphEdge templateEdge) { //constructs the edges label according to the given properties
         return String.format("%s%s%s",
                 (template.isDisplayEdgeAttribute()) ? templateEdge.getEdgeAttribute() : "",
                 (template.isDisplayWeight()) ? " weight:" + templateEdge.getWeight() : "",
@@ -109,12 +109,12 @@ public class GraphBuilder {
 
         try {
             FileInputStream edgeStream = new FileInputStream(graphURI.getPath());
-            BufferedReader edgeReader = new BufferedReader(new InputStreamReader(edgeStream));
+            BufferedReader edgeReader = new BufferedReader(new InputStreamReader(edgeStream)); //read edges from file line by line
 
             String edgeLine;
             Matcher matcher;
             while ((edgeLine = edgeReader.readLine()) != null) {
-                matcher = EDGE_PATTERN.matcher(edgeLine);
+                matcher = EDGE_PATTERN.matcher(edgeLine); //apply pattern
                 if (matcher.find()) {
                     graphTemplate.addEdge(
                             matcher.group("node1"),
@@ -131,7 +131,7 @@ public class GraphBuilder {
                     );
                 }
             }
-            graphTemplate.setDirected();
+            graphTemplate.setDirected(); //set directed property by checking first edge
 
         } catch (IOException | NumberFormatException e) {
             System.err.printf("An Error occured: %s%n", e.getMessage());

@@ -3,6 +3,7 @@ package aufgabe1.algs;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Objects;
 import java.util.Queue;
@@ -13,8 +14,8 @@ public class BreadthFirstSearch {
     private static Node startNode;
     private static Node endNode;
 
-    private static int iLength;
     private static boolean tFound;
+    private static boolean sFound;
 
     private static Queue<Node> nodeQueue;
 
@@ -26,7 +27,7 @@ public class BreadthFirstSearch {
 
 
     public static synchronized LinkedList<Node> shortestPathBFS(Graph graph, Node s, Node t) {
-        if (s.equals(t)) {
+        if (s.equals(t)) { //start == goal?
             path = new LinkedList<>();
             path.addFirst(s);
             return path;
@@ -36,62 +37,80 @@ public class BreadthFirstSearch {
         startNode = s;
         endNode = t;
 
-        initBFS();
-        bfs();
+        initBFS(); //initialize variables
+        bfs(); //apply breadth first search
         if (tFound) {
-            pathBackTrack();
+            pathBackTrackBFS(); //backtrack and collect the path
             return path;
         } else {
-            return null;
+            return null; //no path was found
         }
     }
 
     private static void initBFS() {
-        iLength = 0;
         tFound = false;
+        sFound = false;
 
         nodeQueue = new LinkedList<>();
         nodeQueue.add(startNode);
 
         path = new LinkedList<>();
 
-        pathNodeTable = new Node[workingGraph.getNodeCount()];
-        pathIDTable = new int[workingGraph.getNodeCount()][2];
+        pathNodeTable = new Node[workingGraph.getNodeCount()]; //index = nodeID, pointer to the best predecessor node
+        pathIDTable = new int[workingGraph.getNodeCount()][2]; //index = nodeID, contains the length of the shortest path to each node and the predecessor nodes IDs
         for (int i = 0; i < workingGraph.getNodeCount(); i++) {
-            pathIDTable[i][0] = -1;
-            pathIDTable[i][1] = -1;
+            pathIDTable[i][0] = -1; //-1 = unvisited
+            pathIDTable[i][1] = -1; //-1 = no predecessor
         }
 
         int id1 = (Integer)startNode.getAttribute("id");
         pathNodeTable[id1] = startNode;
-        pathIDTable[id1][0] = 0;
-        pathIDTable[id1][1] = id1;
+        pathIDTable[id1][0] = 0; //length of path from start to s = 0
+        pathIDTable[id1][1] = id1; //predecessor of start = start
     }
 
     private static void bfs() {
-        while (!nodeQueue.isEmpty() && !tFound) {
-            Node workingNode = nodeQueue.poll();
+        while (!nodeQueue.isEmpty() && !tFound) { //as long as the queue is not empty, there are unvisited and unvisited and reachable nodes from start
+            Node workingNode = nodeQueue.poll(); //workingNode = current iterations node to review
 
             workingNode.neighborNodes()
-                    .filter(n -> (!workingNode.getEdgeBetween(n).isDirected()) || (workingNode.getEdgeBetween(n).isDirected() && Objects.equals((Node) workingNode.getEdgeBetween(n).getAttribute("goalNode"), n)))
-                    .distinct()
-                    .filter(n -> pathIDTable[(Integer)n.getAttribute("id")][1] == -1)
+                    .filter(n -> (!workingNode.getEdgeBetween(n).isDirected()) || (workingNode.getEdgeBetween(n).isDirected() && Objects.equals((Node) workingNode.getEdgeBetween(n).getAttribute("goalNode"), n))) //filter nodes n which are reachable from current workingNode //TODO bei entgegengesetzten Multikanten zwischen zwei Knoten könnte getEdgeBetween die falsche aussuchen und die korrekte vernachlässigen - alternative Methoden(?)
+                    .distinct() //no duplicates - graphstreams '.neighborNodes()' may return a single node multiple times for each edge
+                    .filter(n -> pathIDTable[(Integer)n.getAttribute("id")][1] == -1) //filte unvisited nodes
                     .forEach(n -> {
-                        nodeQueue.add(n);
-                        pathIDTable[(Integer)n.getAttribute("id")][0] = iLength + 1;
-                        pathIDTable[(Integer)n.getAttribute("id")][1] = (Integer)workingNode.getAttribute("id");
-                        pathNodeTable[(Integer)n.getAttribute("id")] = workingNode;
-                        if (n.equals(endNode)) {tFound = true;}
+                        nodeQueue.add(n); //queue up unvisited nodes
+                        pathIDTable[(Integer)n.getAttribute("id")][0] = pathIDTable[(Integer)workingNode.getAttribute("id")][0] + 1; //successors path length = workingNodes path length + 1
+                        pathIDTable[(Integer)n.getAttribute("id")][1] = (Integer)workingNode.getAttribute("id"); //successors predecessor = workingNode (ID)
+                        pathNodeTable[(Integer)n.getAttribute("id")] = workingNode; //successors predecessor = workingNode (ID)
+                        if (n.equals(endNode)) {tFound = true;} //if t (goal) was found set the flag and terminate
                     });
-            iLength++;
         }
     }
 
     private static void pathBackTrack() {
 
         path.addFirst(endNode);
-        for (int nodeID = (Integer)endNode.getAttribute("id"); nodeID != pathIDTable[nodeID][1]; nodeID = pathIDTable[nodeID][1]) {
+        for (int nodeID = (Integer)endNode.getAttribute("id"); nodeID != pathIDTable[nodeID][1]; nodeID = pathIDTable[nodeID][1]) { //walk the discovered path backwards and save the used nodes
             path.addFirst(pathNodeTable[nodeID]);
+        }
+    }
+
+    private static void pathBackTrackBFS() {
+        Node predNode = endNode;
+        while (!sFound) {
+            path.addFirst(predNode); //add the next step to the path
+            Node workingNode = predNode;
+
+            predNode = workingNode.neighborNodes()
+                    .filter(n -> (!workingNode.getEdgeBetween(n).isDirected()) || (workingNode.getEdgeBetween(n).isDirected() && Objects.equals((Node) n.getEdgeBetween(workingNode).getAttribute("goalNode"), workingNode))) //filter nodes n which are reachable from current workingNode //TODO bei entgegengesetzten Multikanten zwischen zwei Knoten könnte getEdgeBetween die falsche aussuchen und die korrekte vernachlässigen - alternative Methoden(?)
+                    .distinct() //no duplicates - graphstreams '.neighborNodes()' may return a single node multiple times for each edge
+                    .filter(n -> pathIDTable[(Integer) n.getAttribute("id")][0] == pathIDTable[(Integer)workingNode.getAttribute("id")][0] - 1) //filter nodes that are one step closer to the start
+                    .findFirst() //take first node matching the criteria (one step closer to the start)
+                    .get();
+            if (pathIDTable[(Integer)predNode.getAttribute("id")][0] == 0) { //set flag if distance between the next step and start = 0
+                sFound = true;
+                path.addFirst(predNode);
+            }
         }
     }
 }

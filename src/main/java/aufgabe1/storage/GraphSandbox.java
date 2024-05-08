@@ -23,7 +23,7 @@ public class GraphSandbox {
 
     private GraphSandbox() {}
 
-    public static GraphSandbox getInstance() {
+    public static GraphSandbox getInstance() { //singleton
         if (INSTANCE == null) {
             INSTANCE = new GraphSandbox();
         }
@@ -36,7 +36,7 @@ public class GraphSandbox {
         Graph graph = new MultiGraph("sandbox", false, true);
         graph.setAttribute("ui.stylesheet", String.format("url('%s')", styleSheet.toURL()));
 
-        ViewerThread viewerThread = new ViewerThread(graph);
+        ViewerThread viewerThread = new ViewerThread(graph); //open sandbox window
 
         System.out.print("name: ");
         GraphTemplate template = new GraphTemplate(SCANNER.nextLine());
@@ -44,10 +44,11 @@ public class GraphSandbox {
         System.out.printf("format: \"<Node1> [-/>] <Node2> <attribute> : <weight>;\" type \"exit\" to quit%n");
         String edgeLine;
         Matcher matcher;
-        while(!(edgeLine = SCANNER.nextLine()).equals("exit")) {
+        while(!(edgeLine = SCANNER.nextLine()).equals("exit")) { //add a new edge for every line (that matches the pattern)
             matcher = EDGE_PATTERN.matcher(edgeLine);
             if(matcher.find()) {
 
+                //TODO adding single nodes to the graph not possible
                 String node1 = matcher.group("node1");
                 String node2 = matcher.group("node2");
                 boolean directed = switch (matcher.group("directed")) {
@@ -58,14 +59,14 @@ public class GraphSandbox {
                 int weight = !matcher.group("weight").isEmpty() ? Integer.parseInt(matcher.group("weight")) : STANDARD_WEIGHT;
                 String attribute = matcher.group("attribute");
 
-                graph.addEdge(UUID.randomUUID().toString(), node1, node2, directed);
-                template.addEdge(node1, node2, directed, weight, attribute);
+                graph.addEdge(UUID.randomUUID().toString(), node1, node2, directed); //add edge to be displayed in the window
+                template.addEdge(node1, node2, directed, weight, attribute); //add edge to the abstract representation of the graph to be saved later
             } else {
                 System.out.printf("wrong format: \"%s\" invalid%n", edgeLine);
             }
         }
-        viewerThread.notifyViewer();
-        template.setDirected();
-        template.saveTemplate();
+        viewerThread.notifyViewer(); //close sandbox window
+        template.setDirected(); //set directed property by checking first edge
+        template.saveTemplate(); //save template to file
     }
 }
