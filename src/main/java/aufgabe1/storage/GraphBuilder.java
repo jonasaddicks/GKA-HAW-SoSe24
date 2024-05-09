@@ -19,7 +19,7 @@ public class GraphBuilder {
 
     private static GraphBuilder INSTANCE;
 
-    private final Pattern EDGE_PATTERN = Pattern.compile("(?<node1>[\\wäöü]+)(\\s*?(?<directed>->|--)\\s*?(?<node2>[\\wäöü]+))?(\\s*?\\(?(?<attribute>[\\wäöü]*?)\\)?\\s*?:?\\s*?(?<weight>\\d*?)?\\s*?)?;");
+    private final Pattern EDGE_PATTERN = Pattern.compile("(?<node1>[\\wäöü]+)(\\s*?(?<directed>->|--)\\s*?(?<node2>[\\wäöü]+))?(\\s*?(\\((?<attribute>[\\wäöü]*?)\\))?\\s*?(:\\s*?(?<weight>\\d*?)?\\s*?)?)?;");
     private final int STANDARD_WEIGHT = 0;
     private List<Graph> graphBuilds = new ArrayList<>();
     private int edgeID;
@@ -120,13 +120,12 @@ public class GraphBuilder {
                             matcher.group("node1"),
                             matcher.group("node2"),
                             switch (matcher.group("directed")) {
-                                case "--" -> false;
+                                case "--", "" -> false;
                                 case "->" -> true;
-                                case "" -> false;
                                 case null -> false;
                                 default -> throw new IllegalArgumentException(String.format("graph type '%s' not allowed", matcher.group("directed")));
                             },
-                            !matcher.group("weight").isEmpty() ? Integer.parseInt(matcher.group("weight")) : STANDARD_WEIGHT,
+                            Objects.nonNull(matcher.group("weight")) ? Integer.parseInt(matcher.group("weight")) : STANDARD_WEIGHT,
                             matcher.group("attribute")
                     );
                 }

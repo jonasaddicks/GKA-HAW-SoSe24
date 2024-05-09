@@ -47,13 +47,18 @@ public class GraphTemplate {
         } else {
             BufferedWriter saver = new BufferedWriter(new FileWriter(newGraphFile));
             for (GraphEdge graphEdge : graphEdges) { //iterate over every single edge in the template and write it to the file in the correct format
-                saver.write(String.format("%s %s %s%s%s;%n",
-                        graphEdge.getNode1(),
-                        (graphEdge.isDirected()) ? "->" : "--",
-                        graphEdge.getNode2(),
-                        graphEdge.getEdgeAttribute().isEmpty() || Objects.isNull(graphEdge.getEdgeAttribute()) ? "" : String.format(" (%s)", graphEdge.getEdgeAttribute()),
-                        graphEdge.getWeight() != 0 ? String.format(" : %d", graphEdge.getWeight()) : ""
-                ));
+
+                if (Objects.nonNull(graphEdge.getNode2())) {
+                    saver.write(String.format("%s %s %s%s%s;%n",
+                            graphEdge.getNode1(),
+                            (graphEdge.isDirected()) ? "->" : "--",
+                            graphEdge.getNode2(),
+                            (graphEdge.getEdgeAttribute().isEmpty() || Objects.isNull(graphEdge.getEdgeAttribute())) ? "" : String.format(" (%s)", graphEdge.getEdgeAttribute()),
+                            graphEdge.getWeight() != 1 ? String.format(" : %d", graphEdge.getWeight()) : ""
+                    ));
+                } else {
+                    saver.write(String.format("%s;%n", graphEdge.getNode1()));
+                }
             }
             saver.close();
         }

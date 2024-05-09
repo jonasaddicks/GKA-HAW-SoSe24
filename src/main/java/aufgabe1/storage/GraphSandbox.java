@@ -6,6 +6,7 @@ import org.graphstream.graph.implementations.MultiGraph;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Objects;
 import java.util.Scanner;
 import java.util.UUID;
 import java.util.regex.Matcher;
@@ -15,7 +16,7 @@ public class GraphSandbox {
 
     private static GraphSandbox INSTANCE;
 
-    private static final Pattern EDGE_PATTERN = Pattern.compile("(?<node1>[\\wäöü]+)\\s*?(?<directed>[->])\\s*?(?<node2>[\\wäöü]+)\\s*?(?<attribute>[\\wäöü]*?)\\s*?:?\\s*?(?<weight>\\d*?);");
+    private static final Pattern EDGE_PATTERN = Pattern.compile("(?<node1>[\\wäöü]+)\\s*?((?<directed>[->])\\s*?(?<node2>[\\wäöü]+)\\s*?(?<attribute>[\\wäöü]*?)\\s*?(:\\s*?(?<weight>\\d*?))?)?;");
     private static final Scanner SCANNER = new Scanner(System.in);
     private static final int STANDARD_WEIGHT = 0;
 
@@ -41,25 +42,29 @@ public class GraphSandbox {
         System.out.print("name: ");
         GraphTemplate template = new GraphTemplate(SCANNER.nextLine());
 
-        System.out.printf("format: \"<Node1> [-/>] <Node2> <attribute> : <weight>;\" type \"exit\" to quit%n");
+        System.out.printf("format: \"<Node1> [<-/>> <Node2> [<attribute>] [: <weight>]];\" type \"exit\" to quit%n");
         String edgeLine;
         Matcher matcher;
         while(!(edgeLine = SCANNER.nextLine()).equals("exit")) { //add a new edge for every line (that matches the pattern)
             matcher = EDGE_PATTERN.matcher(edgeLine);
             if(matcher.find()) {
-
-                //TODO adding single nodes to the graph not possible
                 String node1 = matcher.group("node1");
                 String node2 = matcher.group("node2");
                 boolean directed = switch (matcher.group("directed")) {
-                    case "-" -> false;
+                    case "-", "" -> false;
                     case ">" -> true;
-                    default -> throw new IllegalArgumentException(String.format("graph type '%s' not allowed", matcher.group("directed")));
+                    case null -> false;
+                    default ->
+                            throw new IllegalArgumentException(String.format("graph type '%s' not allowed", matcher.group("directed")));
                 };
-                int weight = !matcher.group("weight").isEmpty() ? Integer.parseInt(matcher.group("weight")) : STANDARD_WEIGHT;
+                int weight = Objects.nonNull(matcher.group("weight")) ? Integer.parseInt(matcher.group("weight")) : STANDARD_WEIGHT;
                 String attribute = matcher.group("attribute");
 
-                graph.addEdge(UUID.randomUUID().toString(), node1, node2, directed); //add edge to be displayed in the window
+                if (Objects.nonNull(matcher.group("node2"))) {
+                    graph.addEdge(UUID.randomUUID().toString(), node1, node2, directed); //add edge to be displayed in the window
+                } else {
+                    graph.addNode(matcher.group("node1"));
+                }
                 template.addEdge(node1, node2, directed, weight, attribute); //add edge to the abstract representation of the graph to be saved later
             } else {
                 System.out.printf("wrong format: \"%s\" invalid%n", edgeLine);
