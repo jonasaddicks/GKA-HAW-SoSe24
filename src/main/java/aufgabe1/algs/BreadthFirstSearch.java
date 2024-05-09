@@ -74,7 +74,7 @@ public class BreadthFirstSearch {
             Node workingNode = nodeQueue.poll(); //workingNode = current iterations node to review
 
             workingNode.neighborNodes()
-                    .filter(n -> n.hasEdgeFrom(workingNode)) //filter nodes n which are reachable from current workingNode //TODO bei entgegengesetzten Multikanten zwischen zwei Knoten könnte getEdgeBetween die falsche aussuchen und die korrekte vernachlässigen - alternative Methoden(?)
+                    .filter(n -> n.hasEdgeFrom(workingNode)) //filter nodes n which are reachable from current workingNode
                     .distinct() //no duplicates - graphstreams '.neighborNodes()' may return a single node multiple times for each edge
                     .filter(n -> pathIDTable[(Integer)n.getAttribute("id")][1] == -1) //filte unvisited nodes
                     .forEach(n -> {

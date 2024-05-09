@@ -69,9 +69,6 @@ public class GraphBuilder {
                     node2.setAttribute("id", nodeID++);
                 }
                 edge = graph.addEdge(Integer.toString(++edgeID), templateEdge.getNode1(), templateEdge.getNode2(), templateEdge.isDirected());
-                if (templateEdge.isDirected()) {
-                    edge.setAttribute("goalNode", node2);
-                }
 
                 if (graphTemplate.isDisplayNodeAttribute()) {
                     node1.setAttribute("ui.label", String.format("%s id:%s", templateEdge.getNode1(), node1.getAttribute("id")));
