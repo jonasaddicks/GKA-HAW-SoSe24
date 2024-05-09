@@ -68,11 +68,11 @@ public class GraphBuilder {
 
         public GraphBuilder next() {
             final Node node1 = graph.addNode(this.node1);
-            if (node1.getAttribute("id") == null) {node1.setAttribute("id", graphLinesBuilder.getNodeID());}
+            if (Objects.isNull(node1.getAttribute("id"))) {node1.setAttribute("id", graphLinesBuilder.getNodeID());}
 
             if (Objects.nonNull(this.node2)) {
                 final Node node2 = graph.addNode(this.node2);
-                if (node2.getAttribute("id") == null) {node1.setAttribute("id", graphLinesBuilder.getNodeID());}
+                if (Objects.isNull(node2.getAttribute("id"))) {node2.setAttribute("id", graphLinesBuilder.getNodeID());}
 
                 final Edge edge = graph.addEdge(Integer.toString(graphLinesBuilder.getEdgeID()), node1, node2, directed);
                 edge.setAttribute("weight", this.weight == 0 ? this.weight : 1);

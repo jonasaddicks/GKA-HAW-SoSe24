@@ -76,7 +76,7 @@ public class BreadthFirstSearch {
             workingNode.neighborNodes()
                     .filter(n -> n.hasEdgeFrom(workingNode)) //filter nodes n which are reachable from current workingNode
                     .distinct() //no duplicates - graphstreams '.neighborNodes()' may return a single node multiple times for each edge
-                    .filter(n -> pathIDTable[(Integer)n.getAttribute("id")][1] == -1) //filte unvisited nodes
+                    .filter(n -> pathIDTable[(Integer)n.getAttribute("id")][1] == -1) //filter unvisited nodes
                     .forEach(n -> {
                         nodeQueue.add(n); //queue up unvisited nodes
                         pathIDTable[(Integer)n.getAttribute("id")][0] = pathIDTable[(Integer)workingNode.getAttribute("id")][0] + 1; //successors path length = workingNodes path length + 1
