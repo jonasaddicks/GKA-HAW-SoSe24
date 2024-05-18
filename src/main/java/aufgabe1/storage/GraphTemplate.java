@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
 
@@ -23,15 +24,12 @@ public class GraphTemplate {
     private final boolean displayEdgeAttribute;
     private final boolean displayEdgeID;
 
-
-
     public GraphTemplate(String name) {
         this(name, 0);
     }
 
     public GraphTemplate(String name, int properties) {
         this.name = name;
-
         //properties are defined by the last 4 bits of the 'properties' integer
         this.propertyInt = properties;
         this.displayNodeAttribute = ((properties >> 3) & 1) ==1;        //bit 3 for displayNodeAttribute property (2^3)

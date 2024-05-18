@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -21,7 +22,7 @@ public class GraphBuilder {
 
     private final Pattern EDGE_PATTERN = Pattern.compile("(?<node1>[\\wäöü]+)(\\s*?(?<directed>->|--)\\s*?(?<node2>[\\wäöü]+))?(\\s*?(\\((?<attribute>[\\wäöü]*?)\\))?\\s*?(:\\s*?(?<weight>\\d*?)?\\s*?)?)?;");
     private final int STANDARD_WEIGHT = 0;
-    private List<Graph> graphBuilds = new ArrayList<>();
+    private final List<Graph> graphBuilds = new ArrayList<>();
     private int edgeID;
     private int nodeID;
 
@@ -48,6 +49,7 @@ public class GraphBuilder {
     }
 
     public Graph buildGraphFromTemplate(URI styleSheet, GraphTemplate graphTemplate) throws MalformedURLException {
+        HashMap<String, Integer> labelToId = new HashMap<>();
         nodeID = 0; //counter to be assigned as id to every new node
         edgeID = -1; //counter to be assigned as id to every new edge
 
@@ -60,36 +62,43 @@ public class GraphBuilder {
 
         for (GraphEdge templateEdge : graphTemplate.getGraphEdges()) { //iterate over every single edge in the template
             if (Objects.nonNull(templateEdge.getNode2())) { //case: an edge between two nodes is to be added
-                node1 = graph.addNode(templateEdge.getNode1());
-                if (Objects.isNull(node1.getAttribute("id"))) { //dont overwrite an existing id
-                    node1.setAttribute("id", nodeID++);
-                }
-                node2 = graph.addNode(templateEdge.getNode2());
-                if (Objects.isNull(node2.getAttribute("id"))) { //dont overwrite an existing id
-                    node2.setAttribute("id", nodeID++);
-                }
-                edge = graph.addEdge(Integer.toString(++edgeID), templateEdge.getNode1(), templateEdge.getNode2(), templateEdge.isDirected());
+
+                node1 = initNode(labelToId, graph, templateEdge.getNode1());
+                node2 = initNode(labelToId, graph, templateEdge.getNode2());
 
                 if (graphTemplate.isDisplayNodeAttribute()) {
-                    node1.setAttribute("ui.label", String.format("%s id:%s", templateEdge.getNode1(), node1.getAttribute("id")));
-                    node2.setAttribute("ui.label", String.format("%s id:%s", templateEdge.getNode2(), node2.getAttribute("id")));
+                    node1.setAttribute("ui.label", String.format("%s id:%s", node1.getAttribute("nodeMarker"), node1.getId()));
+                    node2.setAttribute("ui.label", String.format("%s id:%s", node2.getAttribute("nodeMarker"), node2.getId()));
                 }
 
+                edge = graph.addEdge(Integer.toString(++edgeID), node1, node2, templateEdge.isDirected());
                 edge.setAttribute("weight", templateEdge.getWeight());
                 edge.setAttribute("ui.label", getEdgeAttribute(graphTemplate, templateEdge));
+
             } else { //case: only one node without edge is to be added
-                node1 = graph.addNode(templateEdge.getNode1());
-                if (Objects.isNull(node1.getAttribute("id"))) { //dont overwrite an existing id
-                    node1.setAttribute("id", nodeID++);
-                }
+
+                node1 = initNode(labelToId, graph, templateEdge.getNode1());
                 if (graphTemplate.isDisplayNodeAttribute()) {
-                    node1.setAttribute("ui.label", String.format("%s id:%s", templateEdge.getNode1(), node1.getAttribute("id")));
+                    node1.setAttribute("ui.label", String.format("%s id:%s", node1.getAttribute("nodeMarker"), node1.getId()));
                 }
             }
         }
 
         graphBuilds.add(graph);
         return graph;
+    }
+
+    private Node initNode(Map<String, Integer> labelToId, Graph graph, String marker){
+        Node node;
+        if (labelToId.containsKey(marker)) { //does node with the given marker already exists?
+            node = graph.getNode(labelToId.get(marker)); //get existing node
+        } else {
+            node = graph.addNode(Integer.toString(nodeID)); //create new node with current id
+            node.setAttribute("nodeMarker", marker); //set given marker
+            labelToId.put(marker, nodeID); //mark node with given marker as existing
+            nodeID++; //increment nodeID
+        }
+        return node;
     }
 
     private String getEdgeAttribute(GraphTemplate template, GraphEdge templateEdge) { //constructs the edges label according to the given properties
@@ -105,12 +114,13 @@ public class GraphBuilder {
         GraphTemplate graphTemplate = new GraphTemplate(graphURI.getPath(), properties);
 
         try {
-            FileInputStream edgeStream = new FileInputStream(graphURI.getPath());
-            BufferedReader edgeReader = new BufferedReader(new InputStreamReader(edgeStream)); //read edges from file line by line
+            FileInputStream saveFileInputStream = new FileInputStream(graphURI.getPath());
+            InputStreamReader saveFileInputStreamReader = new InputStreamReader(saveFileInputStream, StandardCharsets.ISO_8859_1);
+            BufferedReader saveFileBufferedReader = new BufferedReader(saveFileInputStreamReader); //read edges from file line by line
 
             String edgeLine;
             Matcher matcher;
-            while ((edgeLine = edgeReader.readLine()) != null) {
+            while ((edgeLine = saveFileBufferedReader.readLine()) != null) {
                 matcher = EDGE_PATTERN.matcher(edgeLine); //apply pattern
                 if (matcher.find()) {
                     graphTemplate.addEdge(
