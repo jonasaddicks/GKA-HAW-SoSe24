@@ -37,7 +37,7 @@ public class BreadthFirstSearch {
         initBFS(); //initialize variables
         bfs(); //apply breadth first search
         if (tFound) {
-            pathBackTrackBFS(); //backtrack and collect the path
+            pathBackTrack(); //backtrack and collect the path
             return path;
         } else {
             return null; //no path was found
@@ -60,7 +60,7 @@ public class BreadthFirstSearch {
             pathIDTable[i][1] = -1; //-1 = no predecessor
         }
 
-        int id1 = (Integer)startNode.getAttribute("id");
+        int id1 = Integer.parseInt(startNode.getId());
         pathNodeTable[id1] = startNode;
         pathIDTable[id1][0] = 0; //length of path from start to s = 0
         pathIDTable[id1][1] = id1; //predecessor of start = start
@@ -73,12 +73,12 @@ public class BreadthFirstSearch {
             workingNode.neighborNodes()
                     .filter(n -> n.hasEdgeFrom(workingNode)) //filter nodes n which are reachable from current workingNode
                     .distinct() //no duplicates - graphstreams '.neighborNodes()' may return a single node multiple times for each edge
-                    .filter(n -> pathIDTable[(Integer)n.getAttribute("id")][1] == -1) //filter unvisited nodes
+                    .filter(n -> pathIDTable[Integer.parseInt(n.getId())][1] == -1) //filter unvisited nodes
                     .forEach(n -> {
                         nodeQueue.add(n); //queue up unvisited nodes
-                        pathIDTable[(Integer)n.getAttribute("id")][0] = pathIDTable[(Integer)workingNode.getAttribute("id")][0] + 1; //successors path length = workingNodes path length + 1
-                        pathIDTable[(Integer)n.getAttribute("id")][1] = (Integer)workingNode.getAttribute("id"); //successors predecessor = workingNode (ID)
-                        pathNodeTable[(Integer)n.getAttribute("id")] = workingNode; //successors predecessor = workingNode (ID)
+                        pathIDTable[Integer.parseInt(n.getId())][0] = pathIDTable[Integer.parseInt(workingNode.getId())][0] + 1; //successors path length = workingNodes path length + 1
+                        pathIDTable[Integer.parseInt(n.getId())][1] = Integer.parseInt(workingNode.getId()); //successors predecessor = workingNode (ID)
+                        pathNodeTable[Integer.parseInt(n.getId())] = workingNode; //successors predecessor = workingNode (ID)
                         if (n.equals(endNode)) {tFound = true;} //if t (goal) was found set the flag and terminate
                     });
         }
@@ -87,7 +87,7 @@ public class BreadthFirstSearch {
     private static void pathBackTrack() {
 
         path.addFirst(endNode);
-        for (int nodeID = (Integer)endNode.getAttribute("id"); nodeID != pathIDTable[nodeID][1]; nodeID = pathIDTable[nodeID][1]) { //walk the discovered path backwards and save the used nodes
+        for (int nodeID = Integer.parseInt(endNode.getId()); nodeID != pathIDTable[nodeID][1]; nodeID = pathIDTable[nodeID][1]) { //walk the discovered path backwards and save the used nodes
             path.addFirst(pathNodeTable[nodeID]);
         }
     }
@@ -101,10 +101,10 @@ public class BreadthFirstSearch {
             predNode = workingNode.neighborNodes()
                     .filter(n -> n.hasEdgeToward(workingNode)) //filter nodes n which are reachable from current workingNode
                     .distinct() //no duplicates - graphstreams '.neighborNodes()' may return a single node multiple times for each edge
-                    .filter(n -> pathIDTable[(Integer) n.getAttribute("id")][0] == pathIDTable[(Integer)workingNode.getAttribute("id")][0] - 1) //filter nodes that are one step closer to the start
+                    .filter(n -> pathIDTable[Integer.parseInt(n.getId())][0] == pathIDTable[Integer.parseInt(workingNode.getId())][0] - 1) //filter nodes that are one step closer to the start
                     .findFirst() //take first node matching the criteria (one step closer to the start)
                     .get();
-            if (pathIDTable[(Integer)predNode.getAttribute("id")][0] == 0) { //set flag if distance between the next step and start = 0
+            if (pathIDTable[Integer.parseInt(predNode.getId())][0] == 0) { //set flag if distance between the next step and start = 0
                 sFound = true;
                 path.addFirst(predNode);
             }

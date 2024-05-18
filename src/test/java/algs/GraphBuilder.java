@@ -5,18 +5,21 @@ import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.MultiGraph;
 
+import java.util.HashMap;
 import java.util.Objects;
 
 public class GraphBuilder {
 
     protected final Graph graph;
     private final boolean directed;
+    private final HashMap<String, Integer> labelToId;
     private int nodeID;
     private int edgeID;
 
     public GraphBuilder(String name, boolean directed) {
         this.graph = new MultiGraph(name, false, false);
         this.directed = directed;
+        this.labelToId = new HashMap<>();
         nodeID = 0;
         edgeID = 0;
     }
@@ -67,12 +70,26 @@ public class GraphBuilder {
         }
 
         public GraphBuilder next() {
-            final Node node1 = graph.addNode(this.node1);
-            if (Objects.isNull(node1.getAttribute("id"))) {node1.setAttribute("id", graphLinesBuilder.getNodeID());}
+
+            Node node1;
+            if (graphLinesBuilder.getLabelToId().containsKey(this.node1)) {
+                node1 = graph.getNode(graphLinesBuilder.getLabelToId().get(this.node1));
+            } else {
+                node1 = graph.addNode(Integer.toString(graphLinesBuilder.getNodeID()));
+                node1.setAttribute("nodeMarker", this.node1);
+                graphLinesBuilder.getLabelToId().put(this.node1, Integer.valueOf(node1.getId()));
+            }
 
             if (Objects.nonNull(this.node2)) {
-                final Node node2 = graph.addNode(this.node2);
-                if (Objects.isNull(node2.getAttribute("id"))) {node2.setAttribute("id", graphLinesBuilder.getNodeID());}
+
+                Node node2;
+                if (graphLinesBuilder.getLabelToId().containsKey(this.node2)) {
+                    node2 = graph.getNode(graphLinesBuilder.getLabelToId().get(this.node2));
+                } else {
+                    node2 = graph.addNode(Integer.toString(graphLinesBuilder.getNodeID()));
+                    node2.setAttribute("nodeMarker", this.node2);
+                    graphLinesBuilder.getLabelToId().put(this.node2, Integer.valueOf(node2.getId()));
+                }
 
                 final Edge edge = graph.addEdge(Integer.toString(graphLinesBuilder.getEdgeID()), node1, node2, directed);
                 edge.setAttribute("weight", this.weight == 0 ? this.weight : 1);
@@ -80,6 +97,10 @@ public class GraphBuilder {
             }
             return graphLinesBuilder;
         }
+    }
+
+    public HashMap<String, Integer> getLabelToId() {
+        return labelToId;
     }
 
     public int getNodeID() {

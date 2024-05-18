@@ -2,7 +2,6 @@ package algs.aufgabe1.algs;
 
 import algs.GraphBuilder;
 import aufgabe1.algs.BreadthFirstSearch;
-import aufgabe1.algs.BreadthFirstSearchTempTest;
 import org.graphstream.algorithm.Dijkstra;
 import org.graphstream.algorithm.generator.RandomGenerator;
 import org.graphstream.graph.Graph;
@@ -20,9 +19,6 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Objects;
 import java.util.stream.Stream;
-
-import static aufgabe1.algs.BreadthFirstSearch.shortestPathBFS;
-import static aufgabe1.algs.BreadthFirstSearchTempTest.shortestPathBFS;
 
 public class BreadthFirstSearchTest {
 
@@ -48,10 +44,9 @@ public class BreadthFirstSearchTest {
 
         @MethodSource("randomOptions")
         @ParameterizedTest
-        //TODO INTERNAL REPRESENTATION OF IDS (ATTRIBUTE("nodeID")) NOT COMPATIBLE WITH GRAPHSTREAM ('randomGraph' and 'dijkstra')
         void randomPath(int size, int avgDegree, boolean remove, boolean directed) {
             Graph graph = randomGraph(size, avgDegree, remove, directed);
-            LinkedList<Node> actual = BreadthFirstSearchTempTest.shortestPathBFS(graph, graph.getNode(0), graph.getNode(graph.getNodeCount() - 1));
+            LinkedList<Node> actual = BreadthFirstSearch.shortestPathBFS(graph, graph.getNode(0), graph.getNode(graph.getNodeCount() - 1));
             actual = Objects.nonNull(actual) ? actual : new LinkedList<>();
             LinkedList<Node> expected = pathToLinkedList(computeBestPath(graph.getNode(0), graph.getNode(graph.getNodeCount() - 1)));
 
@@ -91,29 +86,29 @@ public class BreadthFirstSearchTest {
 
     @Test
     public void longerDirectedPath() {
-        final Graph graph = GraphBuilder.builder("graph", true)
+        GraphBuilder graphBuilder = GraphBuilder.builder("graph", true)
                 .node1("A").node2("B").next()
                 .node1("B").node2("C").next()
                 .node1("C").node2("D").next()
                 .node1("D").node2("E").next()
                 .node1("E").node2("F").next()
-                .node1("F").node2("A").next()
-                .graph();
+                .node1("F").node2("A").next();
+        Graph graph = graphBuilder.graph();
 
-        LinkedList<Node> actual = BreadthFirstSearch.shortestPathBFS(graph, graph.getNode("A"), graph.getNode("E"));
+        LinkedList<Node> actual = BreadthFirstSearch.shortestPathBFS(graph, graph.getNode(graphBuilder.getLabelToId().get("A")), graph.getNode(graphBuilder.getLabelToId().get("E")));
         LinkedList<Node> expected = new LinkedList<>(Arrays.asList(
-                graph.getNode("A"),
-                graph.getNode("B"),
-                graph.getNode("C"),
-                graph.getNode("D"),
-                graph.getNode("E")
+                graph.getNode(graphBuilder.getLabelToId().get("A")),
+                graph.getNode(graphBuilder.getLabelToId().get("B")),
+                graph.getNode(graphBuilder.getLabelToId().get("C")),
+                graph.getNode(graphBuilder.getLabelToId().get("D")),
+                graph.getNode(graphBuilder.getLabelToId().get("E"))
                 ));
         Assertions.assertEquals(actual, expected);
     }
 
     @Test
     public void loopsAndMultipleEdgesDirected() {
-        final Graph graph = GraphBuilder.builder("graph", true)
+        GraphBuilder graphBuilder = GraphBuilder.builder("graph", true)
                 .node1("T").node2("T").next()
                 .node1("A").node2("A").next()
                 .node1("B").node2("B").next()
@@ -124,22 +119,22 @@ public class BreadthFirstSearchTest {
                 .node1("S").node2("B").next()
                 .node1("T").node2("S").next()
                 .node1("T").node2("B").next()
-                .node1("B").node2("A").next()
-                .graph();
+                .node1("B").node2("A").next();
+        Graph graph = graphBuilder.graph();
 
-        LinkedList<Node> actual = BreadthFirstSearch.shortestPathBFS(graph, graph.getNode("S"), graph.getNode("T"));
+        LinkedList<Node> actual = BreadthFirstSearch.shortestPathBFS(graph, graph.getNode(graphBuilder.getLabelToId().get("S")), graph.getNode(graphBuilder.getLabelToId().get("T")));
         LinkedList<Node> expected = new LinkedList<>(Arrays.asList(
-                graph.getNode("S"),
-                graph.getNode("B"),
-                graph.getNode("A"),
-                graph.getNode("T")
+                graph.getNode(graphBuilder.getLabelToId().get("S")),
+                graph.getNode(graphBuilder.getLabelToId().get("B")),
+                graph.getNode(graphBuilder.getLabelToId().get("A")),
+                graph.getNode(graphBuilder.getLabelToId().get("T"))
         ));
         Assertions.assertEquals(actual, expected);
     }
 
     @Test
     public void MultipleEdgesUndirected() {
-        final Graph graph = GraphBuilder.builder("graph", false)
+        GraphBuilder graphBuilder = GraphBuilder.builder("graph", false)
                 .node1("A").node2("B").next()
                 .node1("B").node2("C").next()
                 .node1("C").node2("D").next()
@@ -147,41 +142,41 @@ public class BreadthFirstSearchTest {
                 .node1("A").node2("F").next()
                 .node1("F").node2("G").next()
                 .node1("G").node2("H").next()
-                .node1("H").node2("E").next()
-                .graph();
+                .node1("H").node2("E").next();
+        Graph graph = graphBuilder.graph();
 
-        LinkedList<Node> actual = BreadthFirstSearch.shortestPathBFS(graph, graph.getNode("A"), graph.getNode("E"));
+        LinkedList<Node> actual = BreadthFirstSearch.shortestPathBFS(graph, graph.getNode(graphBuilder.getLabelToId().get("A")), graph.getNode(graphBuilder.getLabelToId().get("E")));
         LinkedList<Node> expected = new LinkedList<>(Arrays.asList(
-                graph.getNode("A"),
-                graph.getNode("B"),
-                graph.getNode("C"),
-                graph.getNode("D"),
-                graph.getNode("E")
+                graph.getNode(graphBuilder.getLabelToId().get("A")),
+                graph.getNode(graphBuilder.getLabelToId().get("B")),
+                graph.getNode(graphBuilder.getLabelToId().get("C")),
+                graph.getNode(graphBuilder.getLabelToId().get("D")),
+                graph.getNode(graphBuilder.getLabelToId().get("E"))
         ));
         Assertions.assertEquals(actual.size(), expected.size());
     }
 
     @Test
     public void noPathDirected() {
-        final Graph graph = GraphBuilder.builder("graph", true)
+        GraphBuilder graphBuilder = GraphBuilder.builder("graph", true)
                 .node1("A").node2("B").next()
                 .node1("B").node2("C").next()
-                .node1("C").node2("D").next()
-                .graph();
+                .node1("C").node2("D").next();
+        Graph graph = graphBuilder.graph();
 
-        LinkedList<Node> actual = BreadthFirstSearch.shortestPathBFS(graph, graph.getNode("C"), graph.getNode("A"));
+        LinkedList<Node> actual = BreadthFirstSearch.shortestPathBFS(graph, graph.getNode(graphBuilder.getLabelToId().get("C")), graph.getNode(graphBuilder.getLabelToId().get("A")));
         Assertions.assertNull(actual);
     }
 
     @Test
     public void noPathUndirected() {
-        final Graph graph = GraphBuilder.builder("graph", false)
+        GraphBuilder graphBuilder = GraphBuilder.builder("graph", false)
                 .node1("A").node2("B").next()
                 .node1("B").node2("C").next()
-                .node1("D").node2("E").next()
-                .graph();
+                .node1("D").node2("E").next();
+        Graph graph = graphBuilder.graph();
 
-        LinkedList<Node> actual = BreadthFirstSearch.shortestPathBFS(graph, graph.getNode("A"), graph.getNode("E"));
+        LinkedList<Node> actual = BreadthFirstSearch.shortestPathBFS(graph, graph.getNode(graphBuilder.getLabelToId().get("A")), graph.getNode(graphBuilder.getLabelToId().get("E")));
         Assertions.assertNull(actual);
     }
 }

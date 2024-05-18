@@ -22,7 +22,7 @@ public class GraphBuilder {
 
     private final Pattern EDGE_PATTERN = Pattern.compile("(?<node1>[\\wäöü]+)(\\s*?(?<directed>->|--)\\s*?(?<node2>[\\wäöü]+))?(\\s*?(\\((?<attribute>[\\wäöü]*?)\\))?\\s*?(:\\s*?(?<weight>\\d*?)?\\s*?)?)?;");
     private final int STANDARD_WEIGHT = 0;
-    private final List<Graph> graphBuilds = new ArrayList<>();
+    private final List<GraphInstance> graphBuilds = new ArrayList<>();
     private int edgeID;
     private int nodeID;
 
@@ -39,16 +39,16 @@ public class GraphBuilder {
 
 
 
-    public Graph buildGraphFromFile(URI graphURI, URI styleSheet) throws MalformedURLException {
+    public GraphInstance buildGraphFromFile(URI graphURI, URI styleSheet) throws MalformedURLException {
         return buildGraphFromFile(graphURI, styleSheet, 0);
     }
 
-    public Graph buildGraphFromFile(URI graphURI, URI styleSheet, int properties) throws MalformedURLException {
+    public GraphInstance buildGraphFromFile(URI graphURI, URI styleSheet, int properties) throws MalformedURLException {
         GraphTemplate template = buildTemplate(graphURI, properties); //builds a template from the file first to represent the abstract structure of the graph
         return buildGraphFromTemplate(styleSheet, template);
     }
 
-    public Graph buildGraphFromTemplate(URI styleSheet, GraphTemplate graphTemplate) throws MalformedURLException {
+    public GraphInstance buildGraphFromTemplate(URI styleSheet, GraphTemplate graphTemplate) throws MalformedURLException {
         HashMap<String, Integer> labelToId = new HashMap<>();
         nodeID = 0; //counter to be assigned as id to every new node
         edgeID = -1; //counter to be assigned as id to every new edge
@@ -84,8 +84,9 @@ public class GraphBuilder {
             }
         }
 
-        graphBuilds.add(graph);
-        return graph;
+        GraphInstance graphInstance = new GraphInstance(labelToId, graph);
+        graphBuilds.add(graphInstance);
+        return graphInstance;
     }
 
     private Node initNode(Map<String, Integer> labelToId, Graph graph, String marker){
@@ -143,5 +144,25 @@ public class GraphBuilder {
             System.err.printf("An Error occured: %s%n", e.getMessage());
         }
         return graphTemplate;
+    }
+
+
+
+    public class GraphInstance {
+        HashMap<String, Integer> labelToId;
+        Graph graph;
+
+        GraphInstance(HashMap<String, Integer> labelToId, Graph graph) {
+            this.labelToId = labelToId;
+            this.graph = graph;
+        }
+
+        public HashMap<String, Integer> getLabelToId() {
+            return labelToId;
+        }
+
+        public Graph getGraph() {
+            return graph;
+        }
     }
 }

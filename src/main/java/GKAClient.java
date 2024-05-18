@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Objects;
 import java.util.Scanner;
@@ -23,7 +24,7 @@ public class GKAClient {
     private static URI STYLESHEET;
     private static final String GRAPHS_SAVES = "graphs/%s.gka";
 
-    private static Graph workingGraph;
+    private static GraphBuilder.GraphInstance workingGraph;
     private static ViewerThread workingViewerThread;
 
 
@@ -88,7 +89,7 @@ public class GKAClient {
 //            if (Objects.nonNull(workingViewerThread)) {
 //                workingViewerThread.notifyViewer();
 //            }
-            workingViewerThread = new ViewerThread(workingGraph);
+            workingViewerThread = new ViewerThread(workingGraph.getGraph());
         } catch (MalformedURLException  | URISyntaxException | NumberFormatException | NullPointerException e) {
             System.err.printf("An Error occured: %s%n", e.getMessage());
         }
@@ -115,14 +116,27 @@ public class GKAClient {
     }
 
     private static void bfs() {
+        String nodeMarker;
+        Graph graph = workingGraph.getGraph();
+        HashMap<String, Integer> labelToId = workingGraph.getLabelToId();
+        Node node1, node2;
 
         System.out.print("Node s: ");
-        Node node1 = workingGraph.getNode(PROMPT.nextLine().trim());
+        if (labelToId.containsKey(nodeMarker = PROMPT.nextLine().trim())) {
+            node1 = graph.getNode(labelToId.get(nodeMarker));
+        } else {
+            node1 = graph.getNode(Integer.parseInt(nodeMarker));
+        }
+
         System.out.print("Node t: ");
-        Node node2 = workingGraph.getNode(PROMPT.nextLine().trim());
+        if (labelToId.containsKey(nodeMarker = PROMPT.nextLine().trim())) {
+            node2 = graph.getNode(labelToId.get(nodeMarker));
+        } else {
+            node2 = graph.getNode(Integer.parseInt(nodeMarker));
+        }
 
         if (Objects.nonNull(node1) && Objects.nonNull(node2)) {
-            LinkedList<Node> path = shortestPathBFS(workingGraph, node1, node2);
+            LinkedList<Node> path = shortestPathBFS(graph, node1, node2);
             System.out.println(Objects.isNull(path) ? "No path found" : path);
 
             LinkedList<Node> copyPath = (Objects.nonNull(path)) ? new LinkedList<>(path) : new LinkedList<>();
