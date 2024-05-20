@@ -1,2 +1,4 @@
-package aufgabe2.algs;public class Kruskal {
+package aufgabe2.algs;
+
+public class Kruskal {
 }

@@ -1,2 +1,4 @@
-package aufgabe2.algs;public class Prim {
+package aufgabe2.algs;
+
+public class Prim {
 }
