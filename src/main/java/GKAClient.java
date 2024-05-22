@@ -1,6 +1,7 @@
 import aufgabe1.storage.GraphBuilder;
 import aufgabe1.storage.GraphSandbox;
 import aufgabe1.view.thread.ViewerThread;
+import aufgabe2.generator.randomGraphGenerator;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 
@@ -55,6 +56,10 @@ public class GKAClient {
 
                 case "algorithm":
                     algorithm();
+                    break;
+
+                case "generate":
+                    generate();
                     break;
 
 //                case "close":
@@ -173,6 +178,16 @@ public class GKAClient {
         } else {
             System.out.printf("Error - Node1: %s, Node2: %s%n", node1, node2);
         }
+    }
+
+    private static void generate() {
+        //TODO prompt and check arguments
+        try {
+            randomGraphGenerator.generateConnectedGraph(80, 120, "test1");
+        } catch (IllegalArgumentException e) {
+            System.err.printf("An Error occured: %s%n", e.getMessage());
+        }
+
     }
 
     private static void close() {
