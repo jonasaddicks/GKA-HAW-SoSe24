@@ -63,6 +63,10 @@ public class GKAClient {
                     generate();
                     break;
 
+                case "current":
+                    current();
+                    break;
+
 //                case "close":
 //                    close();
 //                    break;
@@ -84,6 +88,9 @@ public class GKAClient {
         System.exit(0);
     }
 
+    private static void current() {
+        System.out.println(Objects.nonNull(workingGraph) ? workingGraph.getGraph().getId() : "no selected graph");
+    }
     private static void display() {
         try {
             System.out.print("file: ");
