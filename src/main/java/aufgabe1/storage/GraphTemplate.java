@@ -51,7 +51,7 @@ public class GraphTemplate {
                             graphEdge.getNode1(),
                             (graphEdge.isDirected()) ? "->" : "--",
                             graphEdge.getNode2(),
-                            (graphEdge.getEdgeAttribute().isEmpty() || Objects.isNull(graphEdge.getEdgeAttribute())) ? "" : String.format(" (%s)", graphEdge.getEdgeAttribute()),
+                            (Objects.isNull(graphEdge.getEdgeAttribute()) || graphEdge.getEdgeAttribute().isEmpty()) ? "" : String.format(" (%s)", graphEdge.getEdgeAttribute()),
                             graphEdge.getWeight() != 1 ? String.format(" : %d", graphEdge.getWeight()) : ""
                     ));
                 } else {
@@ -68,6 +68,10 @@ public class GraphTemplate {
         if (!graphEdges.isEmpty()) {
             this.directed = graphEdges.getFirst().isDirected();
         }
+    }
+
+    public void addNode(String node1) {
+        addEdge(node1, null, false, null, null);
     }
 
     public void addEdge(String node1, String node2, boolean directed, Integer weight, String edgeAttribute) {

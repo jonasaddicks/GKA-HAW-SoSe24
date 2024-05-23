@@ -134,14 +134,24 @@ public class GKAClient {
         if (labelToId.containsKey(nodeMarker = PROMPT.nextLine().trim())) {
             node1 = graph.getNode(labelToId.get(nodeMarker));
         } else {
-            node1 = graph.getNode(Integer.parseInt(nodeMarker));
+            try {
+                node1 = graph.getNode(Integer.parseInt(nodeMarker));
+            } catch (NumberFormatException e) {
+                node1 = null;
+                System.err.printf("An Error occured: %s%n", e.getMessage());
+            }
         }
 
         System.out.print("Node t: ");
         if (labelToId.containsKey(nodeMarker = PROMPT.nextLine().trim())) {
             node2 = graph.getNode(labelToId.get(nodeMarker));
         } else {
-            node2 = graph.getNode(Integer.parseInt(nodeMarker));
+            try {
+                node2 = graph.getNode(Integer.parseInt(nodeMarker));
+            } catch (NumberFormatException e) {
+                node2 = null;
+                System.err.printf("An Error occured: %s%n", e.getMessage());
+            }
         }
 
         if (Objects.nonNull(node1) && Objects.nonNull(node2)) {
@@ -191,13 +201,22 @@ public class GKAClient {
     }
 
     private static void generate() {
-        //TODO prompt and check arguments
+
+        String numberOfNodesString, numberOfEdgesString, randomGraphName;
+
+        System.out.print("Number of nodes: ");
+        numberOfNodesString = PROMPT.nextLine().trim();
+        System.out.print("Number of edges: ");
+        numberOfEdgesString = PROMPT.nextLine().trim();
+        System.out.print("Graphs name: ");
+        randomGraphName = PROMPT.nextLine().trim();
+
         try {
-            randomGraphGenerator.generateConnectedGraph(80, 120, "test1");
-        } catch (IllegalArgumentException e) {
+            randomGraphGenerator.generateConnectedGraph(Integer.parseInt(numberOfNodesString), Integer.parseInt(numberOfEdgesString), randomGraphName);
+            System.exit(0);
+        } catch (IllegalArgumentException | IOException e) {
             System.err.printf("An Error occured: %s%n", e.getMessage());
         }
-
     }
 
     private static void close() {
