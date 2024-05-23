@@ -15,6 +15,7 @@ import java.util.Objects;
 import java.util.Scanner;
 
 import static aufgabe1.algs.BreadthFirstSearch.shortestPathBFS;
+import static aufgabe2.algs.Kruskal.getMinimalSpanningTree;
 
 public class GKAClient {
 
@@ -111,6 +112,9 @@ public class GKAClient {
                 case "bfs":
                     bfs();
                     break;
+                case "kruskal":
+                    kruskal();
+                    break;
 
                 default: System.out.printf("\"%s\" is no valid algorithm%n", algorithm);
             }
@@ -178,6 +182,12 @@ public class GKAClient {
         } else {
             System.out.printf("Error - Node1: %s, Node2: %s%n", node1, node2);
         }
+    }
+    private static void kruskal(){
+        Graph graph = workingGraph.getGraph();
+        HashMap<String, Integer> labelToId = workingGraph.getLabelToId();
+        Graph MST = getMinimalSpanningTree(graph);
+        ViewerThread displayMST = new ViewerThread(MST);
     }
 
     private static void generate() {
