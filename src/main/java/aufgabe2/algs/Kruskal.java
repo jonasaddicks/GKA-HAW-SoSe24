@@ -7,10 +7,7 @@ import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.MultiGraph;
 
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public class Kruskal {
     private static Graph workingGraph;
@@ -21,7 +18,7 @@ public class Kruskal {
      * 2. Schritt für i = 0 ... |E|, überprüfen, ob die neue Kante einen Kreis bildet, falls nicht, zu neuem Graph hinzufügen
      * Output: Graph (minimales Spanngerüst des eingegebenen Graphen)
      */
-    public static synchronized Graph getMinimalSpanningTree (Graph graph){
+    public static synchronized Graph minimalSpanningTreeKruskal(Graph graph){
         Graph minimalSpanningTree = new MultiGraph("minimalSpanningTree",false,false);
         DisjointSets<Node> disjointNodes = new DisjointSets<>(graph.getNodeCount());
 
