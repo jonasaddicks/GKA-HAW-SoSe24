@@ -39,6 +39,7 @@ public class Prim {
             }
             containedInMinimalSpanningTree[Integer.parseInt(leafToBeAdded.getId())] = true; //mark the currently lowest valued node as contained in the tree
             Node addedLeaf = minimalSpanningTree.addNode(leafToBeAdded.getId()); //add the lowest valued node to the tree
+            addedLeaf.setAttribute("nodeMarker", leafToBeAdded.getAttribute("nodeMarker"));
             addedLeaf.setAttribute("ui.label", leafToBeAdded.getAttribute("ui.label")); //copy node label
 
             if (leafToBeAdded != predecessorNodes[0]) { //add edge between the currently lowest valued node and its predecessor and copy its attributes
@@ -60,6 +61,7 @@ public class Prim {
                         }
                     });
         }
+
         float finishTime = System.nanoTime();
         float elapsedTime = (finishTime - startTime) / 1000 / 1000 / 1000;
 

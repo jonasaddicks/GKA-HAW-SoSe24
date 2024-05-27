@@ -18,6 +18,7 @@ import java.util.Scanner;
 import static aufgabe1.algs.BreadthFirstSearch.shortestPathBFS;
 import static aufgabe2.algs.Kruskal.minimalSpanningTreeKruskal;
 import static aufgabe2.algs.Prim.minimalSpanningTreePrim;
+import static aufgabe2.algs.weightSum.graphWeightSum;
 
 public class GKAClient {
 
@@ -191,7 +192,7 @@ public class GKAClient {
             node1 = graph.getNode(labelToId.get(nodeMarker));
         } else {
             try {
-                node1 = graph.getNode(Integer.parseInt(nodeMarker));
+                node1 = graph.getNode(nodeMarker);
             } catch (NumberFormatException e) {
                 node1 = null;
                 System.err.printf("An Error occured: %s%n", e.getMessage());
@@ -203,7 +204,7 @@ public class GKAClient {
             node2 = graph.getNode(labelToId.get(nodeMarker));
         } else {
             try {
-                node2 = graph.getNode(Integer.parseInt(nodeMarker));
+                node2 = graph.getNode(nodeMarker);
             } catch (NumberFormatException e) {
                 node2 = null;
                 System.err.printf("An Error occured: %s%n", e.getMessage());
@@ -211,6 +212,7 @@ public class GKAClient {
         }
 
         if (Objects.nonNull(node1) && Objects.nonNull(node2)) {
+
             LinkedList<Node> path = shortestPathBFS(graph, node1, node2);
             System.out.println(Objects.isNull(path) ? "No path found" : path);
 
@@ -251,23 +253,39 @@ public class GKAClient {
     }
 
     private static void kruskal() {
-        Graph MST = minimalSpanningTreeKruskal(workingGraph.getGraph());
-        MST.display();
+        System.out.print("display minimal spanning tree? (y/n): ");
+        String displayMinimalSpanningTree = PROMPT.nextLine();
+
+        try {
+            Graph minimalSpanningTree = minimalSpanningTreeKruskal(workingGraph.getGraph());
+            minimalSpanningTree.setAttribute("ui.stylesheet", String.format("url('%s')", STYLESHEET.toURL()));
+            workingGraph.setGraph(minimalSpanningTree);
+            if (displayMinimalSpanningTree.equals("y")) {
+                workingViewerThread = new ViewerThread(workingGraph.getGraph());
+            }
+        } catch (MalformedURLException | IllegalArgumentException e) {
+            System.err.printf("An Error occurred: %s%n", e.getMessage());
+        }
     }
 
     private static void prim() {
+        System.out.print("display minimal spanning tree? (y/n): ");
+        String displayMinimalSpanningTree = PROMPT.nextLine();
+
         try {
             Graph minimalSpanningTree = minimalSpanningTreePrim(workingGraph.getGraph());
             minimalSpanningTree.setAttribute("ui.stylesheet", String.format("url('%s')", STYLESHEET.toURL()));
             workingGraph.setGraph(minimalSpanningTree);
-            workingViewerThread = new ViewerThread(workingGraph.getGraph());
+            if (displayMinimalSpanningTree.equals("y")) {
+                workingViewerThread = new ViewerThread(workingGraph.getGraph());
+            }
         } catch (MalformedURLException | IllegalArgumentException e) {
-            System.err.printf("An Error occured: %s%n", e.getMessage());
+            System.err.printf("An Error occurred: %s%n", e.getMessage());
         }
     }
 
     private static void weightSum() {
-
+        System.out.printf("weightSum of current graph: %d", graphWeightSum(workingGraph.getGraph()));
     }
 
 
