@@ -10,8 +10,7 @@ import java.util.Comparator;
 import java.util.List;
 
 public class Kruskal {
-    private static Graph workingGraph;
-    private static Graph MST;
+
     /**
      * Input: Graph
      * 1. Schritt Nummerierung der Kanten nach aufsteigender Länge
@@ -33,9 +32,10 @@ public class Kruskal {
         List<Edge> edgeList = graph.edges().sorted(Comparator.comparingInt(edge -> (int) edge.getAttribute("weight"))).toList();
 
 
+
         // first edge can be added because we start with an empty graph
-        minimalSpanningTree.addEdge(edgeList.getFirst().getId(),edgeList.getFirst().getSourceNode(),edgeList.getFirst().getTargetNode());
-        disjointNodes.union(edgeList.getFirst().getSourceNode(),edgeList.getFirst().getTargetNode());
+        minimalSpanningTree.addEdge(edgeList.get(0).getId(),edgeList.get(0).getSourceNode().getId(),edgeList.get(0).getTargetNode().getId());
+        disjointNodes.union(edgeList.get(0).getSourceNode(),edgeList.get(0).getTargetNode());
 
         // iterate over the edgeList and check each for cycles, then add to spanningTree
         for (int i = 1; i < edgeList.size(); i++) {
@@ -44,7 +44,7 @@ public class Kruskal {
             // In the beginning no nodes are connected, so each node is found in a one-element-disjointSet
             if (!disjointNodes.inSameSet(workingEdge.getSourceNode(), workingEdge.getTargetNode())) {
                 disjointNodes.union(workingEdge.getSourceNode(), workingEdge.getTargetNode());
-                minimalSpanningTree.addEdge(workingEdge.getId(), workingEdge.getSourceNode(), workingEdge.getTargetNode());
+                minimalSpanningTree.addEdge(workingEdge.getId(), workingEdge.getSourceNode().getId(), workingEdge.getTargetNode().getId());
             }
 
         }
