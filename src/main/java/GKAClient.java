@@ -1,3 +1,4 @@
+
 import aufgabe1.storage.GraphBuilder;
 import aufgabe1.storage.GraphSandbox;
 import aufgabe1.view.thread.ViewerThread;
@@ -250,10 +251,8 @@ public class GKAClient {
     }
 
     private static void kruskal() {
-        Graph graph = workingGraph.getGraph();
-        HashMap<String, Integer> labelToId = workingGraph.getLabelToId();
-        Graph MST = minimalSpanningTreeKruskal(graph);
-        ViewerThread displayMST = new ViewerThread(MST);
+        Graph MST = minimalSpanningTreeKruskal(workingGraph.getGraph());
+        MST.display();
     }
 
     private static void prim() {
