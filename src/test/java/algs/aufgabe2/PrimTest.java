@@ -1,11 +1,13 @@
 package algs.aufgabe2;
 
+import algs.GraphBuilder;
 import org.graphstream.algorithm.Prim;
 import org.graphstream.algorithm.generator.DorogovtsevMendesGenerator;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.implementations.MultiGraph;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -13,6 +15,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.Random;
 import java.util.stream.Stream;
 
+import static aufgabe2.algs.Kruskal.minimalSpanningTreeKruskal;
 import static aufgabe2.algs.Prim.minimalSpanningTreePrim;
 import static aufgabe2.algs.weightSum.graphWeightSum;
 
@@ -77,5 +80,19 @@ public class PrimTest {
             generator.end();
             return graph;
         }
+    }
+
+    @Test
+    public void notConnected() {
+        GraphBuilder graphBuilder = GraphBuilder.builder("graph", false)
+                .node1("A").node2("B").next()
+                .node1("B").node2("C").next()
+                .node1("C").node2("A").next()
+                .node1("D").node2("E").next()
+                .node1("E").node2("F").next()
+                .node1("F").node2("D").next();
+        Graph graph = graphBuilder.graph();
+
+        Assertions.assertThrows(IllegalArgumentException.class, () -> minimalSpanningTreePrim(graph));
     }
 }

@@ -1,15 +1,21 @@
 package algs.aufgabe2;
 
+import algs.GraphBuilder;
+import aufgabe1.algs.BreadthFirstSearch;
 import org.graphstream.algorithm.Kruskal;
 import org.graphstream.algorithm.generator.DorogovtsevMendesGenerator;
 import org.graphstream.graph.Graph;
+import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.MultiGraph;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.Random;
 import java.util.stream.Stream;
 

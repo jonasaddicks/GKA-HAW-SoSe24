@@ -33,10 +33,11 @@ public class Prim {
 
         float startTime = System.nanoTime();
         while (!nodeHeap.isEmpty()) {
-            leafToBeAdded = nodeHeap.extractMin(); //the currently lowest valued node
-            if (leafToBeAdded.getDegree() == 0) {
+            if (nodeHeap.getMinKey() == Integer.MAX_VALUE) {
                 throw new IllegalArgumentException(String.format("graph %s is not connected", graph.getId()));
             }
+            leafToBeAdded = nodeHeap.extractMin(); //the currently lowest valued node
+
             containedInMinimalSpanningTree[Integer.parseInt(leafToBeAdded.getId())] = true; //mark the currently lowest valued node as contained in the tree
             Node addedLeaf = minimalSpanningTree.addNode(leafToBeAdded.getId()); //add the lowest valued node to the tree
             addedLeaf.setAttribute("nodeMarker", leafToBeAdded.getAttribute("nodeMarker"));

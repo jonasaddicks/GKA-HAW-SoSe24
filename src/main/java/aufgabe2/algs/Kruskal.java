@@ -49,12 +49,11 @@ public class Kruskal {
             // In the beginning no nodes are connected, so each node is found in a one-element-disjointSet
             if (!disjointNodes.inSameSet(workingEdge.getSourceNode(), workingEdge.getTargetNode())) {
                 disjointNodes.union(workingEdge.getSourceNode(), workingEdge.getTargetNode());
-                addedEdge = minimalSpanningTree.addEdge(workingEdge.getId(), workingEdge.getSourceNode().getId(), workingEdge.getTargetNode().getId());
 
+                addedEdge = minimalSpanningTree.addEdge(workingEdge.getId(), workingEdge.getSourceNode().getId(), workingEdge.getTargetNode().getId());
                 addedEdge.setAttribute("weight", workingEdge.getAttribute("weight"));
                 addedEdge.setAttribute("edgeMarker", workingEdge.getAttribute("edgeMarker"));
                 addedEdge.setAttribute("ui.label", workingEdge.getAttribute("ui.label"));
-                disjointNodes.union(workingEdge.getSourceNode(), workingEdge.getTargetNode());
             }
         }
 
