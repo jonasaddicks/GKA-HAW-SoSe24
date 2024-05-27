@@ -9,7 +9,7 @@ import java.util.Random;
 public class randomGraphGenerator {
 
     private static final boolean DIRECTED = false;
-    private static final int MAXWEIGHT = 100;
+    private static final int MAXWEIGHT = 1000;
 
     /**
      * n = number of nodes
@@ -48,14 +48,14 @@ public class randomGraphGenerator {
             node1 = nodeIDCount++;
             randomTemplate.addNode(String.valueOf(node1));
             node2 = existingNodes.get(randomIndex.nextInt(existingNodes.size()));
-            randomTemplate.addEdge(String.valueOf(node1), String.valueOf(node2), false, randomIndex.nextInt(MAXWEIGHT), null);
+            randomTemplate.addEdge(String.valueOf(node1), String.valueOf(node2), DIRECTED, randomIndex.nextInt(MAXWEIGHT), null);
             existingNodes.add(node1);
         }
 
         for (int i = 0; i < numberOfEdges - numberOfNodes - 1; i++) {
             node1 = existingNodes.get(randomIndex.nextInt(existingNodes.size()));
             node2 = existingNodes.get(randomIndex.nextInt(existingNodes.size()));
-            randomTemplate.addEdge(String.valueOf(node1), String.valueOf(node2), false, randomIndex.nextInt(MAXWEIGHT), null);
+            randomTemplate.addEdge(String.valueOf(node1), String.valueOf(node2), DIRECTED, randomIndex.nextInt(MAXWEIGHT), null);
         }
 
         randomTemplate.saveTemplate();

@@ -1,4 +1,4 @@
-package algs.aufgabe1.algs;
+package algs.aufgabe1;
 
 import algs.GraphBuilder;
 import aufgabe1.algs.BreadthFirstSearch;
@@ -50,9 +50,6 @@ public class BreadthFirstSearchTest {
             actual = Objects.nonNull(actual) ? actual : new LinkedList<>();
             LinkedList<Node> expected = pathToLinkedList(computeBestPath(graph.getNode(0), graph.getNode(graph.getNodeCount() - 1)));
 
-            System.out.printf("actual: %s%n", actual);
-            System.out.printf("expect: %s%n", expected);
-
             //Da der ungewichtete Dijkstra zum Vergleich genutzt wird können sich verschiedene kürzeste Pfade ergeben, weswegen lediglich auf die Länge der Pfade geprüft wird
             Assertions.assertEquals(actual.size(), expected.size());
         }
@@ -69,7 +66,7 @@ public class BreadthFirstSearchTest {
             return dijkstra.getPath(end);
         }
 
-        private Graph randomGraph(int size, int averageDegree, boolean allowRemove, boolean directed) {
+        private static Graph randomGraph(int size, int averageDegree, boolean allowRemove, boolean directed) {
             Graph graph = new MultiGraph("graph");
             RandomGenerator generator = new RandomGenerator(averageDegree, allowRemove, directed, null, null);
             generator.addSink(graph);
