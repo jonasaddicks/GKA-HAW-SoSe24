@@ -28,7 +28,6 @@ public class randomGraphGenerator {
      *      - Auswahl zwei zufälliger existierender Nodes
      *      - Generierung einer Edge (mit beliebigem aber unterschiedlichem Gewicht) zwischen den ausgewählten Nodes )
      */
-
     public static void generateConnectedGraph (int numberOfNodes, int numberOfEdges, String randomGraphName) throws IOException {
         if (numberOfEdges < numberOfNodes - 1) {
             throw new IllegalArgumentException(String.format("edges: %d, nodes: %d - edges has to be at least equal to nodes - 1", numberOfEdges, numberOfNodes));

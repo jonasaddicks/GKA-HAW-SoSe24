@@ -42,8 +42,8 @@ public class GKAClient {
 
     public static void shell() {
         String command;
-        System.out.println("type \"quit\" to terminate");
-        System.out.println("options: \"sandbox\", \"display\", \"algorithm\"");
+        System.out.printf("type \"quit\" to terminate%n");
+        System.out.printf("options: \"sandbox\", \"display\", \"generate\", \"getCurrent\", \"setCurrent\", \"algorithm\"%n%n");
         while (!(command = PROMPT.nextLine()).equals("quit")) {
 
             switch (command) {
@@ -56,16 +56,20 @@ public class GKAClient {
                     display();
                     break;
 
-                case "algorithm":
-                    algorithm();
-                    break;
-
                 case "generate":
                     generate();
                     break;
 
-                case "current":
-                    current();
+                case "getCurrent":
+                    getCurrent();
+                    break;
+
+                case "setCurrent":
+                    setCurrent();
+                    break;
+
+                case "algorithm":
+                    algorithm();
                     break;
 
 //                case "close":
@@ -74,6 +78,7 @@ public class GKAClient {
 
                 default: System.out.printf("unknown command: \"%s\"%n", command);
             }
+            System.out.printf("%n");
         }
         System.exit(0);
     }
@@ -89,9 +94,6 @@ public class GKAClient {
         System.exit(0);
     }
 
-    private static void current() {
-        System.out.println(Objects.nonNull(workingGraph) ? workingGraph.getGraph().getId() : "no selected graph");
-    }
     private static void display() {
         try {
             System.out.print("file: ");
@@ -109,9 +111,45 @@ public class GKAClient {
         }
     }
 
+    private static void generate() {
+
+        String numberOfNodesString, numberOfEdgesString, randomGraphName;
+
+        System.out.print("Number of nodes: ");
+        numberOfNodesString = PROMPT.nextLine().trim();
+        System.out.print("Number of edges: ");
+        numberOfEdgesString = PROMPT.nextLine().trim();
+        System.out.print("Graphs name: ");
+        randomGraphName = PROMPT.nextLine().trim();
+
+        try {
+            randomGraphGenerator.generateConnectedGraph(Integer.parseInt(numberOfNodesString), Integer.parseInt(numberOfEdgesString), randomGraphName);
+            System.exit(0);
+        } catch (IllegalArgumentException | IOException e) {
+            System.err.printf("An Error occured: %s%n", e.getMessage());
+        }
+    }
+
+    private static void getCurrent() {
+        System.out.println(Objects.nonNull(workingGraph) ? workingGraph.getGraph().getId() : "no selected graph");
+    }
+
+    private static void setCurrent() {
+        try {
+            System.out.print("file: ");
+            String file = PROMPT.nextLine().trim();
+
+            workingGraph = BUILDER.buildGraphFromFile(ResourceLoadHelper.loadResource(String.format(GRAPHS_SAVES, file)), STYLESHEET, 0);
+        } catch (MalformedURLException  | URISyntaxException | NumberFormatException | NullPointerException e) {
+            System.err.printf("An Error occured: %s%n", e.getMessage());
+        }
+    }
+
+
+
     private static void algorithm() {
         if (Objects.nonNull(workingGraph)) {
-            System.out.print("algorithm: ");
+            System.out.printf("options: \"bfs\", \"kruskal\", \"prim\", \"weightSum\"%nalgorithm: ");
 
             String algorithm = PROMPT.nextLine().trim();
 
@@ -127,6 +165,10 @@ public class GKAClient {
 
                 case "prim":
                     prim();
+                    break;
+
+                case "weightSum":
+                    weightSum();
                     break;
 
                 default: System.out.printf("\"%s\" is no valid algorithm%n", algorithm);
@@ -206,6 +248,7 @@ public class GKAClient {
             System.out.printf("Error - Node1: %s, Node2: %s%n", node1, node2);
         }
     }
+
     private static void kruskal() {
         Graph graph = workingGraph.getGraph();
         HashMap<String, Integer> labelToId = workingGraph.getLabelToId();
@@ -214,27 +257,21 @@ public class GKAClient {
     }
 
     private static void prim() {
-        Graph MST = minimalSpanningTreePrim(workingGraph.getGraph());
-    }
-
-    private static void generate() {
-
-        String numberOfNodesString, numberOfEdgesString, randomGraphName;
-
-        System.out.print("Number of nodes: ");
-        numberOfNodesString = PROMPT.nextLine().trim();
-        System.out.print("Number of edges: ");
-        numberOfEdgesString = PROMPT.nextLine().trim();
-        System.out.print("Graphs name: ");
-        randomGraphName = PROMPT.nextLine().trim();
-
         try {
-            randomGraphGenerator.generateConnectedGraph(Integer.parseInt(numberOfNodesString), Integer.parseInt(numberOfEdgesString), randomGraphName);
-            System.exit(0);
-        } catch (IllegalArgumentException | IOException e) {
+            Graph minimalSpanningTree = minimalSpanningTreePrim(workingGraph.getGraph());
+            minimalSpanningTree.setAttribute("ui.stylesheet", String.format("url('%s')", STYLESHEET.toURL()));
+            workingGraph.setGraph(minimalSpanningTree);
+            workingViewerThread = new ViewerThread(workingGraph.getGraph());
+        } catch (MalformedURLException | IllegalArgumentException e) {
             System.err.printf("An Error occured: %s%n", e.getMessage());
         }
     }
+
+    private static void weightSum() {
+
+    }
+
+
 
     private static void close() {
         if (Objects.nonNull(workingViewerThread)) {workingViewerThread.notifyViewer();}

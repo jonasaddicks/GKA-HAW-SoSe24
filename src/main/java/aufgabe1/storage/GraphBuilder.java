@@ -73,6 +73,7 @@ public class GraphBuilder {
 
                 edge = graph.addEdge(Integer.toString(++edgeID), node1, node2, templateEdge.isDirected());
                 edge.setAttribute("weight", templateEdge.getWeight());
+                edge.setAttribute("edgeMarker", templateEdge.getEdgeAttribute());
                 edge.setAttribute("ui.label", getEdgeAttribute(graphTemplate, templateEdge));
 
             } else { //case: only one node without edge is to be added
