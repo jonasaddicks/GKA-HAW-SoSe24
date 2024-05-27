@@ -64,7 +64,7 @@ public class KruskalTest {
                     .reduce(0, Integer::sum);
         }
 
-        private static Graph randomGraph(int size, int maxWeight) {
+        private Graph randomGraph(int size, int maxWeight) {
             Random rand = new Random();
             Graph graph = new MultiGraph("graph");
             DorogovtsevMendesGenerator generator = new DorogovtsevMendesGenerator();

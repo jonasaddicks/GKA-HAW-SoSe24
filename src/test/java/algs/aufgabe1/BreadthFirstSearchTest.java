@@ -66,7 +66,7 @@ public class BreadthFirstSearchTest {
             return dijkstra.getPath(end);
         }
 
-        private static Graph randomGraph(int size, int averageDegree, boolean allowRemove, boolean directed) {
+        private Graph randomGraph(int size, int averageDegree, boolean allowRemove, boolean directed) {
             Graph graph = new MultiGraph("graph");
             RandomGenerator generator = new RandomGenerator(averageDegree, allowRemove, directed, null, null);
             generator.addSink(graph);
