@@ -53,7 +53,7 @@ public class Prim {
 
             Node finalLeafToBeAdded = leafToBeAdded;
             leafToBeAdded.neighborNodes() //evaluate neighboring nodes and their distance to the tree
-                    .filter(n -> !containedInMinimalSpanningTree[Integer.parseInt(n.getId())]) //filter nodes which are already contained in the minimalSpanningTree
+                    .filter(n -> !containedInMinimalSpanningTree[Integer.parseInt(n.getId())]) //filter nodes which are not yet contained in the minimalSpanningTree
                     .forEach(n -> {
                         int weight = (int) finalLeafToBeAdded.getEdgeBetween(n).getAttribute("weight"); //get weight of edge between newly added node and n
                         if (weight < (int) nodeHeapPointer[Integer.parseInt(n.getId())].getKey()) { //if new weight is smaller than current weight -> overwrite
@@ -66,7 +66,7 @@ public class Prim {
         float finishTime = System.nanoTime();
         float elapsedTime = (finishTime - startTime) / 1000 / 1000 / 1000;
 
-        System.out.printf("elapsed time for prim: %f s%n", elapsedTime);
+        System.out.printf("elapsed time for prim: %fs%n", elapsedTime);
 
         return minimalSpanningTree;
     }

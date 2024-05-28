@@ -51,7 +51,7 @@ public class BreadthFirstSearchTest {
             LinkedList<Node> expected = pathToLinkedList(computeBestPath(graph.getNode(0), graph.getNode(graph.getNodeCount() - 1)));
 
             //Da der ungewichtete Dijkstra zum Vergleich genutzt wird können sich verschiedene kürzeste Pfade ergeben, weswegen lediglich auf die Länge der Pfade geprüft wird
-            Assertions.assertEquals(actual.size(), expected.size());
+            Assertions.assertEquals(expected.size(), actual.size());
         }
 
         private LinkedList<Node> pathToLinkedList(Path path) {
@@ -100,7 +100,7 @@ public class BreadthFirstSearchTest {
                 graph.getNode(graphBuilder.getLabelToId().get("D")),
                 graph.getNode(graphBuilder.getLabelToId().get("E"))
                 ));
-        Assertions.assertEquals(actual, expected);
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
@@ -126,7 +126,7 @@ public class BreadthFirstSearchTest {
                 graph.getNode(graphBuilder.getLabelToId().get("A")),
                 graph.getNode(graphBuilder.getLabelToId().get("T"))
         ));
-        Assertions.assertEquals(actual, expected);
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
@@ -150,7 +150,7 @@ public class BreadthFirstSearchTest {
                 graph.getNode(graphBuilder.getLabelToId().get("D")),
                 graph.getNode(graphBuilder.getLabelToId().get("E"))
         ));
-        Assertions.assertEquals(actual.size(), expected.size());
+        Assertions.assertEquals(expected.size(), actual.size());
     }
 
     @Test

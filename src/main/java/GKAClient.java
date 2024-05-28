@@ -125,7 +125,7 @@ public class GKAClient {
         randomGraphName = PROMPT.nextLine().trim();
 
         try {
-            randomGraphGenerator.generateConnectedGraph(Integer.parseInt(numberOfNodesString), Integer.parseInt(numberOfEdgesString), randomGraphName);
+            randomGraphGenerator.generateConnectedTemplate(Integer.parseInt(numberOfNodesString), Integer.parseInt(numberOfEdgesString), randomGraphName);
             System.exit(0);
         } catch (IllegalArgumentException | IOException e) {
             System.err.printf("An Error occured: %s%n", e.getMessage());

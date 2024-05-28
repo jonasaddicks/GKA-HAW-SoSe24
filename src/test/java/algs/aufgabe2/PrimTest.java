@@ -12,17 +12,18 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.io.IOException;
 import java.util.Random;
 import java.util.stream.Stream;
 
-import static aufgabe2.algs.Kruskal.minimalSpanningTreeKruskal;
 import static aufgabe2.algs.Prim.minimalSpanningTreePrim;
 import static aufgabe2.algs.weightSum.graphWeightSum;
+import static aufgabe2.generator.randomGraphGenerator.generateConnectedGraph;
 
 public class PrimTest {
 
     @Nested
-    class Randomized {
+    class RandomizedDorogovtsev {
 
         private static Stream<Arguments> randomOptions() {
             return Stream.of(
@@ -36,8 +37,8 @@ public class PrimTest {
                     Arguments.of(128000, 100000),
                     Arguments.of(256000, 1000000),
                     Arguments.of(512000, 1000000),
-                    Arguments.of(1024000, 10000000),
-                    Arguments.of(2048000, 10000000)
+                    Arguments.of(1024000, 10000000)
+                    //Arguments.of(2048000, 10000000) - may throw OutOfMemoryError
             );
         }
 
@@ -79,6 +80,61 @@ public class PrimTest {
             }
             generator.end();
             return graph;
+        }
+    }
+
+    @Nested
+    class RandomizedOwnGenerator {
+
+        private static Stream<Arguments> randomOptions() {
+            return Stream.of(
+                    Arguments.of(1000, 1000),
+                    Arguments.of(2000, 3000),
+                    Arguments.of(4000, 9000),
+                    Arguments.of(8000, 27000),
+                    Arguments.of(16000, 16000),
+                    Arguments.of(32000, 48000),
+                    Arguments.of(64000, 124000),
+                    Arguments.of(128000, 372000),
+                    Arguments.of(256000, 256000),
+                    Arguments.of(512000, 768000),
+                    Arguments.of(1024000, 2304000)
+                    //Arguments.of(2048000, 6912000) - may throw OutOfMemoryError
+            );
+        }
+
+        @MethodSource("randomOptions")
+        @ParameterizedTest
+        void randomTree(int nodes, int edges) {
+            Graph graph = randomGraph(nodes, edges);
+
+            int actual = graphWeightSum(minimalSpanningTreePrim(graph));
+            int expected = computeMinimalSpanningTree(graph);
+
+            Assertions.assertEquals(expected, actual);
+        }
+
+        private int computeMinimalSpanningTree(Graph graph) {
+            Prim prim = new Prim("isInTree", "inTree", "notInTree");
+            prim.init(graph);
+            prim.compute();
+
+            return weightSumGraphStream(graph);
+        }
+
+        private int weightSumGraphStream(Graph graph) {
+            return graph.edges()
+                    .filter(e -> e.getAttribute("isInTree").equals("inTree"))
+                    .map(e -> (int) e.getAttribute("weight"))
+                    .reduce(0, Integer::sum);
+        }
+
+        private Graph randomGraph(int nodes, int edges) {
+            try {
+                return generateConnectedGraph(nodes, edges, "testGraph");
+            } catch (IOException e) {
+                return null;
+            }
         }
     }
 
