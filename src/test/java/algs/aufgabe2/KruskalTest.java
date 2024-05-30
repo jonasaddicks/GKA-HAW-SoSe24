@@ -1,35 +1,27 @@
 package algs.aufgabe2;
 
-import algs.GraphBuilder;
-import aufgabe1.algs.BreadthFirstSearch;
 import org.graphstream.algorithm.Kruskal;
-import org.graphstream.algorithm.Prim;
 import org.graphstream.algorithm.generator.DorogovtsevMendesGenerator;
 import org.graphstream.graph.Graph;
-import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.MultiGraph;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.Random;
 import java.util.stream.Stream;
 
 import static aufgabe2.algs.Kruskal.minimalSpanningTreeKruskal;
-import static aufgabe2.algs.Prim.minimalSpanningTreePrim;
 import static aufgabe2.algs.weightSum.graphWeightSum;
 import static aufgabe2.generator.randomGraphGenerator.generateConnectedGraph;
 
 public class KruskalTest {
 
     @Nested
-    class Randomized {
+    class RandomizedDorogovtsev {
 
         private static Stream<Arguments> randomOptions() {
             return Stream.of(
@@ -43,8 +35,8 @@ public class KruskalTest {
                     Arguments.of(128000, 100000),
                     Arguments.of(256000, 1000000),
                     Arguments.of(512000, 1000000),
-                    Arguments.of(1024000, 10000000),
-                    Arguments.of(2048000, 10000000)
+                    Arguments.of(1024000, 10000000)
+                    //Arguments.of(2048000, 10000000) - may throw OutOfMemoryError
             );
         }
 
@@ -94,17 +86,17 @@ public class KruskalTest {
 
         private static Stream<Arguments> randomOptions() {
             return Stream.of(
-                    Arguments.of(1000, 1000),
-                    Arguments.of(2000, 3000),
-                    Arguments.of(4000, 9000),
-                    Arguments.of(8000, 27000),
-                    Arguments.of(16000, 16000),
-                    Arguments.of(32000, 48000),
-                    Arguments.of(64000, 124000),
-                    Arguments.of(128000, 372000),
-                    Arguments.of(256000, 256000),
-                    Arguments.of(512000, 768000),
-                    Arguments.of(1024000, 2304000)
+                    Arguments.of(1000, 2000),
+                    Arguments.of(2000, 4000),
+                    Arguments.of(4000, 8000),
+                    Arguments.of(8000, 16000),
+                    Arguments.of(16000, 32000),
+                    Arguments.of(32000, 64000),
+                    Arguments.of(64000, 128000),
+                    Arguments.of(128000, 256000),
+                    Arguments.of(256000, 512000),
+                    Arguments.of(512000, 1024000),
+                    Arguments.of(1024000, 2048000)
                     //Arguments.of(2048000, 6912000) - may throw OutOfMemoryError
             );
         }

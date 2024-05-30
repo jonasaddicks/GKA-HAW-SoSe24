@@ -88,17 +88,17 @@ public class PrimTest {
 
         private static Stream<Arguments> randomOptions() {
             return Stream.of(
-                    Arguments.of(1000, 1000),
-                    Arguments.of(2000, 3000),
-                    Arguments.of(4000, 9000),
-                    Arguments.of(8000, 27000),
-                    Arguments.of(16000, 16000),
-                    Arguments.of(32000, 48000),
-                    Arguments.of(64000, 124000),
-                    Arguments.of(128000, 372000),
-                    Arguments.of(256000, 256000),
-                    Arguments.of(512000, 768000),
-                    Arguments.of(1024000, 2304000)
+                    Arguments.of(1000, 2000),
+                    Arguments.of(2000, 4000),
+                    Arguments.of(4000, 8000),
+                    Arguments.of(8000, 16000),
+                    Arguments.of(16000, 32000),
+                    Arguments.of(32000, 64000),
+                    Arguments.of(64000, 128000),
+                    Arguments.of(128000, 256000),
+                    Arguments.of(256000, 512000),
+                    Arguments.of(512000, 1024000),
+                    Arguments.of(1024000, 2048000)
                     //Arguments.of(2048000, 6912000) - may throw OutOfMemoryError
             );
         }
