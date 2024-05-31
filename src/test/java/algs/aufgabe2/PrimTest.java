@@ -88,7 +88,7 @@ public class PrimTest {
 
         private static Stream<Arguments> randomOptions() {
             return Stream.of(
-                    Arguments.of(1000, 2000),
+                    Arguments.of(1000, 200000),
                     Arguments.of(2000, 4000),
                     Arguments.of(4000, 8000),
                     Arguments.of(8000, 16000),
