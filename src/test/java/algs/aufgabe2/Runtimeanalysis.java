@@ -1,6 +1,5 @@
 package algs.aufgabe2;
 
-import org.graphstream.algorithm.Kruskal;
 import org.graphstream.graph.Graph;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
@@ -15,7 +14,7 @@ import java.util.stream.Stream;
 import static aufgabe2.algs.Kruskal.minimalSpanningTreeKruskal;
 import static aufgabe2.algs.Prim.minimalSpanningTreePrim;
 import static aufgabe2.algs.weightSum.graphWeightSum;
-import static aufgabe2.generator.randomGraphGenerator.generateConnectedGraph;
+import static aufgabe2.generator.RandomGraphGenerator.generateConnectedGraph;
 
 
 public class Runtimeanalysis {

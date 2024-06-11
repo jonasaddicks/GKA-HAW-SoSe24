@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Random;
 
-public class randomGraphGenerator {
+public class RandomGraphGenerator {
 
     private static final boolean DIRECTED = false;
     private static final int MAXWEIGHT = 1000;

@@ -16,7 +16,7 @@ import java.util.stream.Stream;
 
 import static aufgabe2.algs.Kruskal.minimalSpanningTreeKruskal;
 import static aufgabe2.algs.weightSum.graphWeightSum;
-import static aufgabe2.generator.randomGraphGenerator.generateConnectedGraph;
+import static aufgabe2.generator.RandomGraphGenerator.generateConnectedGraph;
 
 public class KruskalTest {
 
