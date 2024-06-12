@@ -1,5 +1,5 @@
 package algs.aufgabe3;
 
-public class HierholzerTest {
+public class EulerCircuitTest {
     //TODO
 }
