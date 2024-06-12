@@ -74,6 +74,7 @@ public class GKAClient {
                     algorithm();
                     break;
 
+//                GraphStream issue - closing the display (viewer) disrupts/freezes the main thread
 //                case "close":
 //                    close();
 //                    break;
