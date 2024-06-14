@@ -1,7 +1,6 @@
 package algs.aufgabe2;
 
 import org.graphstream.graph.Graph;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -13,7 +12,7 @@ import java.util.stream.Stream;
 
 import static aufgabe2.algs.Kruskal.minimalSpanningTreeKruskal;
 import static aufgabe2.algs.Prim.minimalSpanningTreePrim;
-import static aufgabe2.algs.weightSum.graphWeightSum;
+import static util.weightSum.graphWeightSum;
 import static aufgabe2.generator.RandomGraphGenerator.generateConnectedGraph;
 
 

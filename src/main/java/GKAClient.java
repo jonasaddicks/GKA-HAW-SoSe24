@@ -5,6 +5,7 @@ import aufgabe1.view.thread.ViewerThread;
 import aufgabe2.generator.RandomGraphGenerator;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
+import util.ResourceLoadHelper;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -18,7 +19,7 @@ import java.util.Scanner;
 import static aufgabe1.algs.BreadthFirstSearch.shortestPathBFS;
 import static aufgabe2.algs.Kruskal.minimalSpanningTreeKruskal;
 import static aufgabe2.algs.Prim.minimalSpanningTreePrim;
-import static aufgabe2.algs.weightSum.graphWeightSum;
+import static util.weightSum.graphWeightSum;
 
 public class GKAClient {
 

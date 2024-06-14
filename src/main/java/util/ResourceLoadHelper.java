@@ -1,3 +1,5 @@
+package util;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Objects;

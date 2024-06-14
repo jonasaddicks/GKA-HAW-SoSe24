@@ -1,4 +1,4 @@
-package aufgabe2.algs;
+package util;
 
 import org.graphstream.graph.Graph;
 
