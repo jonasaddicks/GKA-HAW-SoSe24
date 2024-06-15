@@ -7,13 +7,12 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.io.IOException;
 import java.util.stream.Stream;
 
 import static aufgabe2.algs.Kruskal.minimalSpanningTreeKruskal;
 import static aufgabe2.algs.Prim.minimalSpanningTreePrim;
 import static util.weightSum.graphWeightSum;
-import static aufgabe2.generator.RandomGraphGenerator.generateConnectedGraph;
+import static aufgabe2.generator.RandomGraphGeneratorConnected.generateConnectedGraph;
 
 
 public class Runtimeanalysis {
@@ -50,11 +49,7 @@ public class Runtimeanalysis {
 
 
         private Graph randomGraph(int nodes, int edges) {
-            try {
-                return generateConnectedGraph(nodes, edges, "testGraph");
-            } catch (IOException e) {
-                return null;
-            }
+            return generateConnectedGraph(nodes, edges, "testGraph");
         }
     }
 }

@@ -3,19 +3,18 @@ package algs.aufgabe3;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
-import util.DisjointSetsComponents;
-import util.NodeDegree;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Stream;
+
+import static util.GraphValidater.isEulerian;
 
 
 public class EulerCircuitTestHelper {
 
-    public static boolean isEulerCircuit(ArrayList<Edge> eulerCircuit, Graph eulerGraph) {
+    public static boolean validEulerCircuit(ArrayList<Edge> eulerCircuit, Graph eulerGraph) {
         if (!isEulerian(eulerGraph) || Objects.isNull(eulerCircuit)) {return false;}
 
         Integer[] visited = new Integer[eulerGraph.getEdgeCount()];
@@ -48,18 +47,5 @@ public class EulerCircuitTestHelper {
                 || edge1Node1.equals(edge2Node1)
                 || edge1Node0.equals(edge2Node1)
                 || edge1Node1.equals(edge2Node0);
-    }
-
-    private static boolean isEulerian(Graph eulerGraph) {
-        DisjointSetsComponents<Node> disjointNodes = new DisjointSetsComponents<>(eulerGraph.getNodeCount());
-        Optional<Node> node = eulerGraph.nodes()
-                .peek(disjointNodes::add)
-                .filter(n -> NodeDegree.getDegree(n) % 2 != 0)
-                .findFirst();
-        if (node.isPresent()) {
-            return false;
-        }
-        eulerGraph.edges().forEach(e -> disjointNodes.union(e.getNode0(), e.getNode1()));
-        return disjointNodes.getComponents() == 1;
     }
 }

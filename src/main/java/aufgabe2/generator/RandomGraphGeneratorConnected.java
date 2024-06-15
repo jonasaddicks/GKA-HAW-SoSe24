@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Random;
 
-public class RandomGraphGenerator {
+public class RandomGraphGeneratorConnected {
 
     private static final boolean DIRECTED = false;
     private static final int MAXWEIGHT = 1000;
@@ -66,7 +66,7 @@ public class RandomGraphGenerator {
         randomTemplate.saveTemplate();
     }
 
-    public static Graph generateConnectedGraph (int numberOfNodes, int numberOfEdges, String randomGraphName) throws IOException {
+    public static Graph generateConnectedGraph (int numberOfNodes, int numberOfEdges, String randomGraphName) {
         if (numberOfEdges < numberOfNodes - 1) {
             throw new IllegalArgumentException(String.format("edges: %d, nodes: %d - edges has to be at least equal to nodes - 1", numberOfEdges, numberOfNodes));
         }

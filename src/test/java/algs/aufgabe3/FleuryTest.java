@@ -1,16 +1,55 @@
 package algs.aufgabe3;
 
 import algs.GraphBuilder;
+import aufgabe3.generator.RandomGraphGeneratorEuler;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.ArrayList;
+import java.util.stream.Stream;
 
 import static aufgabe3.algs.Fleury.eulerCircuitFleury;
 
 public class FleuryTest {
+
+    @Nested
+    class RandomizedEulerCircuit {
+
+        private static Stream<Arguments> randomOptions() {
+            return Stream.of(
+                    Arguments.of(1000, 2),
+                    Arguments.of(1000, 5),
+                    Arguments.of(2000, 2),
+                    Arguments.of(2000, 5),
+                    Arguments.of(4000, 2),
+                    Arguments.of(4000, 5),
+                    Arguments.of(8000, 2),
+                    Arguments.of(8000, 5),
+                    Arguments.of(16000, 2),
+                    Arguments.of(16000, 5)
+            );
+        }
+
+        @MethodSource("randomOptions")
+        @ParameterizedTest
+        void randomCircuit(int numberOfNodes, int avgDegree) {
+            Graph graph = randomGraph(numberOfNodes, avgDegree);
+
+            ArrayList<Edge> eulerCircuit = eulerCircuitFleury(graph);
+            Assertions.assertTrue(EulerCircuitTestHelper.validEulerCircuit(eulerCircuit, graph));
+        }
+
+        private Graph randomGraph(int size, int avgDegree) {
+            Graph graph = RandomGraphGeneratorEuler.generateEulerianGraph(size, avgDegree, "randomCircuit");
+            return graph;
+        }
+    }
 
 
 
@@ -32,7 +71,7 @@ public class FleuryTest {
         Graph graph = graphBuilder.graph();
 
         ArrayList<Edge> eulerCircuit = eulerCircuitFleury(graph);
-        Assertions.assertTrue(EulerCircuitTestHelper.isEulerCircuit(eulerCircuit, graph));
+        Assertions.assertTrue(EulerCircuitTestHelper.validEulerCircuit(eulerCircuit, graph));
     }
 
     @Test
@@ -53,7 +92,7 @@ public class FleuryTest {
         Graph graph = graphBuilder.graph();
 
         ArrayList<Edge> eulerCircuit = eulerCircuitFleury(graph);
-        Assertions.assertTrue(EulerCircuitTestHelper.isEulerCircuit(eulerCircuit, graph));
+        Assertions.assertTrue(EulerCircuitTestHelper.validEulerCircuit(eulerCircuit, graph));
     }
 
     @Test
@@ -80,7 +119,7 @@ public class FleuryTest {
         Graph graph = graphBuilder.graph();
 
         ArrayList<Edge> eulerCircuit = eulerCircuitFleury(graph);
-        Assertions.assertTrue(EulerCircuitTestHelper.isEulerCircuit(eulerCircuit, graph));
+        Assertions.assertTrue(EulerCircuitTestHelper.validEulerCircuit(eulerCircuit, graph));
     }
 
     @Test
@@ -102,7 +141,7 @@ public class FleuryTest {
         Graph graph = graphBuilder.graph();
 
         ArrayList<Edge> eulerCircuit = eulerCircuitFleury(graph);
-        Assertions.assertTrue(EulerCircuitTestHelper.isEulerCircuit(eulerCircuit, graph));
+        Assertions.assertTrue(EulerCircuitTestHelper.validEulerCircuit(eulerCircuit, graph));
     }
 
     @Test
@@ -112,7 +151,7 @@ public class FleuryTest {
         Graph graph = graphBuilder.graph();
 
         ArrayList<Edge> eulerCircuit = eulerCircuitFleury(graph);
-        Assertions.assertTrue(EulerCircuitTestHelper.isEulerCircuit(eulerCircuit, graph));
+        Assertions.assertTrue(EulerCircuitTestHelper.validEulerCircuit(eulerCircuit, graph));
     }
 
     @Test
@@ -122,7 +161,7 @@ public class FleuryTest {
         Graph graph = graphBuilder.graph();
 
         ArrayList<Edge> eulerCircuit = eulerCircuitFleury(graph);
-        Assertions.assertTrue(EulerCircuitTestHelper.isEulerCircuit(eulerCircuit, graph));
+        Assertions.assertTrue(EulerCircuitTestHelper.validEulerCircuit(eulerCircuit, graph));
     }
 
 
