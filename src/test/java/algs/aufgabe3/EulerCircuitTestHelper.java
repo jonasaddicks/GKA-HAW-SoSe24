@@ -9,7 +9,7 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-import static util.GraphValidater.isEulerian;
+import static aufgabe3.algs.GraphValidator.isEulerian;
 
 
 public class EulerCircuitTestHelper {

@@ -5,14 +5,17 @@ import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.MultiGraph;
-import org.graphstream.ui.graphicGraph.GraphicNode;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Objects;
 
-import static util.GraphValidater.isEulerian;
+import static aufgabe3.algs.GraphValidator.isEulerian;
 
 public class Hierholzer {
+
+    private static HashSet<Integer>[] crosspoints;
+    private static ArrayList<Circuit> circuits;
 
     /**
      * @return  -ArrayList containing all edges in order
@@ -26,7 +29,8 @@ public class Hierholzer {
         Node currentNode = null, successorNode;
         Edge eulerEdge;
 
-        ArrayList<Circuit> circuits = new ArrayList<>();
+        circuits = new ArrayList<>();
+        crosspoints = new HashSet[graph.getNodeCount()];
         int circuitCount = 0;
         int edgeCount = graphClone.getEdgeCount();
 
@@ -38,12 +42,21 @@ public class Hierholzer {
 
             successorNode = currentNode.neighborNodes().findFirst().get(); //what happens with loops?
 
+            int nodeID = Integer.parseInt(successorNode.getId());
+            if (Objects.isNull(crosspoints[nodeID])) {
+                crosspoints[nodeID] = new HashSet<>();
+            }
+            crosspoints[nodeID].add(circuitCount);
+
+            Node originalNode = graph.getNode(nodeID); //TODO delete
+            originalNode.setAttribute("ui.label", String.format("nodeID:%d circuits: %s", nodeID, crosspoints[nodeID])); //TODO delete
+
             eulerEdge = currentNode.getEdgeBetween(successorNode);
-            circuits.get(circuitCount).addEdge(eulerEdge);
+            circuits.get(circuitCount).nodes.add(successorNode);
             graphClone.removeEdge(eulerEdge);
             edgeCount--;
 
-            if (successorNode == circuits.get(circuitCount).startingNode) {
+            if (successorNode == circuits.get(circuitCount).nodes.getFirst()) {
                 currentNode = null;
                 circuitCount++;
             } else {
@@ -51,11 +64,50 @@ public class Hierholzer {
             }
         }
 
+        //TODO delete
         for (Circuit c : circuits) {
             System.out.println(c);
         }
+        System.out.println();
 
+        ArrayList<Edge> eulerCircuit = new ArrayList<>();
+        //traverseCircuits(circuits.getFirst(), new HashSet<>(), eulerCircuit);
+
+        System.out.printf("expected: %d, actual: %d%n", graph.getEdgeCount(), eulerCircuit.size());//TODO delete
+        System.out.println(eulerCircuit);//TODO delete
         return null;
+    }
+
+    private static void traverseCircuits(Circuit circuit, Node startingNode, HashSet<Integer> openCircuits, ArrayList<Edge> eulerCircuit) {
+        openCircuits.add(circuit.circuitID);
+        Node sourceNode = startingNode, targetNode;
+        Edge eulerEdge;
+
+        while (!circuit.nodes.isEmpty()) {
+
+//            HashSet<Integer> crossingCircuits = new HashSet<>(crosspoints[Integer.parseInt(connectingNode.getId())]);
+//            crossingCircuits.removeAll(openCircuits);
+//            if (!crossingCircuits.isEmpty()) {
+//                traverseCircuits(circuits.get(crossingCircuits.stream().findFirst().get()), openCircuits, eulerCircuit);
+//            }
+        }
+    }
+
+    private static Node getOppositeNode(Node node, Edge edge){
+        Node node0 =  edge.getNode0();
+        Node node1 =  edge.getNode1();
+
+        return node.equals(node0) ? node1 : node0;
+    }
+
+    private static Node getConnectingNode(Edge edge1, Edge edge2) {
+        Node edge1Node0 = edge1.getNode0();
+        Node edge1Node1 = edge1.getNode1();
+        Node edge2Node0 = edge2.getNode0();
+        Node edge2Node1 = edge2.getNode1();
+
+        if(edge1Node0.equals(edge2Node0) || edge1Node0.equals(edge2Node1)) {return edge1Node0;}
+        return edge1Node1;
     }
 
     private static Graph cloneGraph(Graph graph) {
@@ -67,35 +119,22 @@ public class Hierholzer {
 
 
     private static class Circuit {
-        private final ArrayList<Edge> edges;
-        private final Node startingNode;
+        private final ArrayList<Node> nodes;
         private final int circuitID;
 
         public Circuit(Node startingNode, int circuitID) {
-            this.edges = new ArrayList<>();
-            this.startingNode = startingNode;
+            this.nodes = new ArrayList<>();
+            nodes.add(startingNode);
             this.circuitID = circuitID;
         }
 
-        public void addEdge(Edge edge) {
-            this.edges.add(edge);
-        }
-
-        public Node getStartingNode() {
-            return this.startingNode;
-        }
-
-        public ArrayList<Edge> getEdges() {
-            return this.edges;
-        }
-
-        public int getCircuitID() {
-            return this.circuitID;
+        public void addNode(Node node) {
+            this.nodes.add(node);
         }
 
         @Override
         public String toString() {
-            return String.format("Circuit %d: %s", circuitID, edges);
+            return String.format("Circuit %d: %s", circuitID, nodes);
         }
     }
 

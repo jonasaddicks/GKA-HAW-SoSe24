@@ -1,11 +1,13 @@
-package util;
+package aufgabe3.algs;
 
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
+import util.DisjointSetsComponents;
+import util.NodeDegree;
 
 import java.util.Optional;
 
-public class GraphValidater {
+public class GraphValidator {
 
     public static boolean isEulerian(Graph eulerGraph) {
         if (eulerGraph.getNodeCount() < 1) {return false;}
