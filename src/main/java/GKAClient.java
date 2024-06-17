@@ -2,7 +2,7 @@
 import aufgabe1.storage.GraphBuilder;
 import aufgabe1.storage.GraphSandbox;
 import util.view.thread.ViewerThread;
-import aufgabe2.generator.RandomGraphGeneratorConnected;
+import aufgabe2.generator.RandomGraphConnected;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import util.ResourceLoadHelper;
@@ -127,7 +127,7 @@ public class GKAClient {
         randomGraphName = PROMPT.nextLine().trim();
 
         try {
-            RandomGraphGeneratorConnected.generateConnectedTemplate(Integer.parseInt(numberOfNodesString), Integer.parseInt(numberOfEdgesString), randomGraphName);
+            RandomGraphConnected.generateConnectedTemplate(Integer.parseInt(numberOfNodesString), Integer.parseInt(numberOfEdgesString), randomGraphName);
             System.exit(0);
         } catch (IllegalArgumentException | IOException e) {
             System.err.printf("An Error occured: %s%n", e.getMessage());

@@ -6,9 +6,9 @@ import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.MultiGraph;
 
-import java.util.Objects;
-
 public class Prim {
+
+    private Prim() {}
 
     public static synchronized Graph minimalSpanningTreePrim(Graph graph) throws IllegalArgumentException {
 

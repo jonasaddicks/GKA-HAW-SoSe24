@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Random;
 
-public class RandomGraphGeneratorEuler {
+public class RandomGraphEuler {
 
     public static Graph generateEulerianGraph (int numberOfNodes, int avgDegree, String randomGraphName) {
         Graph randomGraph = new MultiGraph(randomGraphName, false, false);

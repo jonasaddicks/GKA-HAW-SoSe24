@@ -1,7 +1,7 @@
 package algs.aufgabe3;
 
 import algs.GraphBuilder;
-import aufgabe3.generator.RandomGraphGeneratorEuler;
+import aufgabe3.generator.RandomGraphEuler;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.junit.jupiter.api.Assertions;
@@ -46,7 +46,7 @@ public class FleuryTest {
         }
 
         private Graph randomGraph(int size, int avgDegree) {
-            Graph graph = RandomGraphGeneratorEuler.generateEulerianGraph(size, avgDegree, "randomCircuit");
+            Graph graph = RandomGraphEuler.generateEulerianGraph(size, avgDegree, "randomCircuit");
             return graph;
         }
     }

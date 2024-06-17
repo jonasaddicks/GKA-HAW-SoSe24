@@ -1,11 +1,10 @@
 package aufgabe1.algs;
 
+import aufgabe3.algs.Hierholzer;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 
-import java.util.Arrays;
 import java.util.LinkedList;
-import java.util.Objects;
 import java.util.Queue;
 
 public class BreadthFirstSearch {
@@ -22,6 +21,8 @@ public class BreadthFirstSearch {
     private static int[][] pathIDTable;
     private static Node[] pathNodeTable;
     private static LinkedList<Node> path;
+
+    private BreadthFirstSearch() {}
 
     public static synchronized LinkedList<Node> shortestPathBFS(Graph graph, Node s, Node t) {
         if (s.equals(t)) { //start == goal?

@@ -11,7 +11,9 @@ import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Random;
 
-public class RandomGraphGeneratorConnected {
+public class RandomGraphConnected {
+
+    private RandomGraphConnected() {}
 
     private static final boolean DIRECTED = false;
     private static final int MAXWEIGHT = 1000;

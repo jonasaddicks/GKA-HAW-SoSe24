@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 
 import static aufgabe2.algs.Prim.minimalSpanningTreePrim;
 import static util.weightSum.graphWeightSum;
-import static aufgabe2.generator.RandomGraphGeneratorConnected.generateConnectedGraph;
+import static aufgabe2.generator.RandomGraphConnected.generateConnectedGraph;
 
 public class PrimTest {
 

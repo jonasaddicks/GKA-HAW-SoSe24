@@ -9,6 +9,8 @@ import java.util.Optional;
 
 public class GraphValidator {
 
+    private GraphValidator() {}
+
     public static boolean isEulerian(Graph eulerGraph) {
         if (eulerGraph.getNodeCount() < 1) {return false;}
         DisjointSetsComponents<Node> disjointNodes = new DisjointSetsComponents<>(eulerGraph.getNodeCount());

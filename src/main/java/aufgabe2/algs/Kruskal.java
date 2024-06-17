@@ -11,6 +11,8 @@ import java.util.List;
 
 public class Kruskal {
 
+    private Kruskal() {}
+
     /**
      * Input: Graph
      * 1. Schritt Nummerierung der Kanten nach aufsteigender Länge
