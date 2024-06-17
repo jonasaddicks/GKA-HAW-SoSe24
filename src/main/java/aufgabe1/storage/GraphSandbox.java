@@ -1,6 +1,6 @@
 package aufgabe1.storage;
 
-import aufgabe1.view.thread.ViewerThread;
+import util.view.thread.ViewerThread;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.implementations.MultiGraph;
 

@@ -37,7 +37,7 @@ public class Hierholzer {
         while (edgeCount > 0) {
             if (Objects.isNull(currentNode)) {
                 currentNode = graphClone.nodes().filter(n -> n.getDegree() > 0).findFirst().get();
-                circuits.add(new Circuit(currentNode, circuitCount));
+                circuits.add(new Circuit(graph.getNode(currentNode.getId()), circuitCount));
             }
 
             successorNode = currentNode.neighborNodes().findFirst().get(); //what happens with loops?
@@ -52,11 +52,11 @@ public class Hierholzer {
             originalNode.setAttribute("ui.label", String.format("nodeID:%d circuits: %s", nodeID, crosspoints[nodeID])); //TODO delete
 
             eulerEdge = currentNode.getEdgeBetween(successorNode);
-            circuits.get(circuitCount).nodes.add(successorNode);
+            circuits.get(circuitCount).nodes.add(graph.getNode(successorNode.getId()));
             graphClone.removeEdge(eulerEdge);
             edgeCount--;
 
-            if (successorNode == circuits.get(circuitCount).nodes.getFirst()) {
+            if (Objects.equals(successorNode.getId(), circuits.get(circuitCount).nodes.getFirst().getId())) {
                 currentNode = null;
                 circuitCount++;
             } else {
@@ -71,25 +71,36 @@ public class Hierholzer {
         System.out.println();
 
         ArrayList<Edge> eulerCircuit = new ArrayList<>();
-        //traverseCircuits(circuits.getFirst(), new HashSet<>(), eulerCircuit);
+        traverseCircuits(circuits.getFirst(), 0, new HashSet<>(), eulerCircuit);
 
         System.out.printf("expected: %d, actual: %d%n", graph.getEdgeCount(), eulerCircuit.size());//TODO delete
         System.out.println(eulerCircuit);//TODO delete
-        return null;
+
+        return eulerCircuit;
     }
 
-    private static void traverseCircuits(Circuit circuit, Node startingNode, HashSet<Integer> openCircuits, ArrayList<Edge> eulerCircuit) {
+    private static void traverseCircuits(Circuit circuit, int nodeCircuitIndex, HashSet<Integer> openCircuits, ArrayList<Edge> eulerCircuit) {
         openCircuits.add(circuit.circuitID);
-        Node sourceNode = startingNode, targetNode;
+        Node sourceNode = circuit.nodes.remove(nodeCircuitIndex), targetNode;
         Edge eulerEdge;
 
         while (!circuit.nodes.isEmpty()) {
 
-//            HashSet<Integer> crossingCircuits = new HashSet<>(crosspoints[Integer.parseInt(connectingNode.getId())]);
-//            crossingCircuits.removeAll(openCircuits);
-//            if (!crossingCircuits.isEmpty()) {
-//                traverseCircuits(circuits.get(crossingCircuits.stream().findFirst().get()), openCircuits, eulerCircuit);
-//            }
+            if (nodeCircuitIndex == circuit.nodes.size()) {nodeCircuitIndex = 0;}
+
+            targetNode = circuit.nodes.remove(nodeCircuitIndex);
+            eulerEdge = sourceNode.getEdgeBetween(targetNode);
+            eulerCircuit.add(eulerEdge);
+
+            HashSet<Integer> crossingCircuits = new HashSet<>(crosspoints[Integer.parseInt(targetNode.getId())]);
+            crossingCircuits.removeAll(openCircuits);
+            if (!crossingCircuits.isEmpty()) {
+                Circuit recursiveCircuit = circuits.get(crossingCircuits.stream().findFirst().get());
+                int recursiveIndex = recursiveCircuit.nodes.indexOf(targetNode);
+                traverseCircuits(recursiveCircuit, recursiveIndex, openCircuits, eulerCircuit);
+            }
+
+            sourceNode = targetNode;
         }
     }
 

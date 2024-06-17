@@ -1,4 +1,4 @@
-package aufgabe1.view.thread;
+package util.view.thread;
 
 import org.graphstream.graph.Graph;
 import org.graphstream.ui.view.Viewer;
