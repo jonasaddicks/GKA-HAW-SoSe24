@@ -6,15 +6,18 @@ import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.MultiGraph;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Random;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.*;
+
 import util.DisjointSetsComponents;
+import util.ResourceLoadHelper;
 
 import static aufgabe1.algs.BreadthFirstSearch.shortestPathBFS;
 
 public class Fleury {
+    private static URI STYLESHEET;
+
     private static boolean checkEuler(Graph graph) {
         HashSet<Node> visited = new HashSet<>();
         //check degree
@@ -33,14 +36,17 @@ public class Fleury {
     }
 
     public static ArrayList<Edge> eulerCircleFleury(Graph graph) throws IllegalArgumentException {
-        if (!checkEuler(graph)) throw new IllegalArgumentException("The graph is not an euler graph.");
+        if (!checkEuler(graph)) return null;
 
         ArrayList<Edge> eulerCircle = new ArrayList<>();
-        Node v0 = graph.getNode(getRandomIndex(graph.getNodeCount()));
+        int edgeNum = graph.getEdgeCount();
+        if (graph.getNodeCount() == 0) return null;
+        if (graph.getEdgeCount() == 0) return eulerCircle;
+        Node v0 = graph.getNode(getRandomIndex(graph.getNodeCount()-1));
 
 
         while (v0.getOutDegree() > 0){
-            Edge e0 = v0.getEdge(getRandomIndex(v0.getOutDegree()));
+            Edge e0 = v0.getEdge(getRandomIndex(v0.getOutDegree()-1));
 
             if (!isBridge(e0, graph)){
                 graph.removeEdge(e0);
@@ -48,15 +54,17 @@ public class Fleury {
                 v0 = e0.getTargetNode();
             }
         }
+        if (eulerCircle.size()==edgeNum) return eulerCircle;
 
-        return eulerCircle;
+        return null;
     }
 
     private static boolean isBridge(Edge e0, Graph graph) {
         DisjointSetsComponents<Node> disjointNodes = new DisjointSetsComponents<>(graph.getNodeCount());
         graph.removeEdge(e0);
         graph.edges().forEach(e -> disjointNodes.union(e.getNode0(), e.getNode1()));
-        return disjointNodes.getComponents() == 1;
+        graph.addEdge(e0.getId(),e0.getNode0(),e0.getNode1());
+        return disjointNodes.getComponents() > 1;
     }
 
     private static int getRandomIndex(int range) {
