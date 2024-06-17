@@ -3,6 +3,7 @@ import aufgabe1.storage.GraphBuilder;
 import aufgabe1.storage.GraphSandbox;
 import aufgabe1.view.thread.ViewerThread;
 import aufgabe2.generator.RandomGraphGeneratorConnected;
+import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import util.ResourceLoadHelper;
@@ -20,6 +21,7 @@ import static aufgabe1.algs.BreadthFirstSearch.shortestPathBFS;
 import static aufgabe2.algs.Kruskal.minimalSpanningTreeKruskal;
 import static aufgabe2.algs.Prim.minimalSpanningTreePrim;
 import static util.weightSum.graphWeightSum;
+import static aufgabe3.algs.Fleury.eulerCircleFleury;
 
 public class GKAClient {
 

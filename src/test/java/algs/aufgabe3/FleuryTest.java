@@ -14,7 +14,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.ArrayList;
 import java.util.stream.Stream;
 
-import static aufgabe3.algs.Fleury.eulerCircuitFleury;
+import static aufgabe3.algs.Fleury.eulerCircleFleury;
 
 public class FleuryTest {
 
@@ -41,7 +41,7 @@ public class FleuryTest {
         void randomCircuit(int numberOfNodes, int avgDegree) {
             Graph graph = randomGraph(numberOfNodes, avgDegree);
 
-            ArrayList<Edge> eulerCircuit = eulerCircuitFleury(graph);
+            ArrayList<Edge> eulerCircuit = eulerCircleFleury(graph);
             Assertions.assertTrue(EulerCircuitTestHelper.validEulerCircuit(eulerCircuit, graph));
         }
 
@@ -70,7 +70,7 @@ public class FleuryTest {
                 .node1("D").node2("A").next();
         Graph graph = graphBuilder.graph();
 
-        ArrayList<Edge> eulerCircuit = eulerCircuitFleury(graph);
+        ArrayList<Edge> eulerCircuit = eulerCircleFleury(graph);
         Assertions.assertTrue(EulerCircuitTestHelper.validEulerCircuit(eulerCircuit, graph));
     }
 
@@ -91,7 +91,7 @@ public class FleuryTest {
                 .node1("G").node2("A").next();
         Graph graph = graphBuilder.graph();
 
-        ArrayList<Edge> eulerCircuit = eulerCircuitFleury(graph);
+        ArrayList<Edge> eulerCircuit = eulerCircleFleury(graph);
         Assertions.assertTrue(EulerCircuitTestHelper.validEulerCircuit(eulerCircuit, graph));
     }
 
@@ -118,7 +118,7 @@ public class FleuryTest {
                 .node1("A").node2("A").next();
         Graph graph = graphBuilder.graph();
 
-        ArrayList<Edge> eulerCircuit = eulerCircuitFleury(graph);
+        ArrayList<Edge> eulerCircuit = eulerCircleFleury(graph);
         Assertions.assertTrue(EulerCircuitTestHelper.validEulerCircuit(eulerCircuit, graph));
     }
 
@@ -140,7 +140,7 @@ public class FleuryTest {
                 .node1("I").node2("D").next();
         Graph graph = graphBuilder.graph();
 
-        ArrayList<Edge> eulerCircuit = eulerCircuitFleury(graph);
+        ArrayList<Edge> eulerCircuit = eulerCircleFleury(graph);
         Assertions.assertTrue(EulerCircuitTestHelper.validEulerCircuit(eulerCircuit, graph));
     }
 
@@ -150,7 +150,7 @@ public class FleuryTest {
                 .node1("A").next();
         Graph graph = graphBuilder.graph();
 
-        ArrayList<Edge> eulerCircuit = eulerCircuitFleury(graph);
+        ArrayList<Edge> eulerCircuit = eulerCircleFleury(graph);
         Assertions.assertTrue(EulerCircuitTestHelper.validEulerCircuit(eulerCircuit, graph));
     }
 
@@ -160,7 +160,7 @@ public class FleuryTest {
                 .node1("A").node2("A").next();
         Graph graph = graphBuilder.graph();
 
-        ArrayList<Edge> eulerCircuit = eulerCircuitFleury(graph);
+        ArrayList<Edge> eulerCircuit = eulerCircleFleury(graph);
         Assertions.assertTrue(EulerCircuitTestHelper.validEulerCircuit(eulerCircuit, graph));
     }
 
@@ -171,7 +171,7 @@ public class FleuryTest {
     public void emptyGraph() {
         Graph graph = new GraphBuilder("graph", false).graph();
 
-        ArrayList<Edge> eulerCircuit = eulerCircuitFleury(graph);
+        ArrayList<Edge> eulerCircuit = eulerCircleFleury(graph);
         Assertions.assertNull(eulerCircuit);
     }
 
@@ -196,7 +196,7 @@ public class FleuryTest {
                 .node1("I").node2("D").next();
         Graph graph = graphBuilder.graph();
 
-        ArrayList<Edge> eulerCircuit = eulerCircuitFleury(graph);
+        ArrayList<Edge> eulerCircuit = eulerCircleFleury(graph);
         Assertions.assertNull(eulerCircuit);
     }
 
@@ -211,7 +211,7 @@ public class FleuryTest {
                 .node1("A").node2("E").next();
         Graph graph = graphBuilder.graph();
 
-        ArrayList<Edge> eulerCircuit = eulerCircuitFleury(graph);
+        ArrayList<Edge> eulerCircuit = eulerCircleFleury(graph);
         Assertions.assertNull(eulerCircuit);
     }
 
@@ -229,7 +229,7 @@ public class FleuryTest {
                 .node1("H").node2("E").next();
         Graph graph = graphBuilder.graph();
 
-        ArrayList<Edge> eulerCircuit = eulerCircuitFleury(graph);
+        ArrayList<Edge> eulerCircuit = eulerCircleFleury(graph);
         Assertions.assertNull(eulerCircuit);
     }
 }
