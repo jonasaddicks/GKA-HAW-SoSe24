@@ -1,19 +1,13 @@
 package aufgabe3.algs;
 
-import org.graphstream.algorithm.util.DisjointSets;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
-import org.graphstream.graph.implementations.MultiGraph;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.*;
 
 import util.DisjointSetsComponents;
-import util.ResourceLoadHelper;
-
-import static aufgabe1.algs.BreadthFirstSearch.shortestPathBFS;
 
 public class Fleury {
     private static URI STYLESHEET;

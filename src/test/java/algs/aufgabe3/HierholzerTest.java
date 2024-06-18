@@ -11,6 +11,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.stream.Stream;
 
@@ -38,15 +39,15 @@ public class HierholzerTest {
 
         @MethodSource("randomOptions")
         @ParameterizedTest
-        void randomCircuit(int numberOfNodes, int avgDegree) {
+        void randomCircuit(int numberOfNodes, int avgDegree) throws MalformedURLException {
             Graph graph = randomGraph(numberOfNodes, avgDegree);
 
             ArrayList<Edge> eulerCircuit = eulerCircuitHierholzer(graph);
             Assertions.assertTrue(EulerCircuitTestHelper.validEulerCircuit(eulerCircuit, graph));
         }
 
-        private Graph randomGraph(int size, int avgDegree) {
-            Graph graph = RandomGraphEuler.generateEulerianGraph(size, avgDegree, "randomCircuit");
+        private Graph randomGraph(int size, int avgDegree) throws MalformedURLException {
+            Graph graph = RandomGraphEuler.generateEulerianGraph(size, avgDegree, "randomCircuit", aufgabe1.storage.GraphBuilder.getInstance(), null, 0).getGraph();
             return graph;
         }
     }

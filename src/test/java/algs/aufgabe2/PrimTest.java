@@ -12,6 +12,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.io.IOException;
 import java.util.Random;
 import java.util.stream.Stream;
 
@@ -104,7 +105,7 @@ public class PrimTest {
 
         @MethodSource("randomOptions")
         @ParameterizedTest
-        void randomTree(int nodes, int edges) {
+        void randomTree(int nodes, int edges) throws IOException {
             Graph graph = randomGraph(nodes, edges);
 
             int actual = graphWeightSum(minimalSpanningTreePrim(graph));
@@ -128,8 +129,8 @@ public class PrimTest {
                     .reduce(0, Integer::sum);
         }
 
-        private Graph randomGraph(int nodes, int edges) {
-            return generateConnectedGraph(nodes, edges, "testGraph");
+        private Graph randomGraph(int nodes, int edges) throws IOException {
+            return generateConnectedGraph(nodes, edges, "testGraph", aufgabe1.storage.GraphBuilder.getInstance(), null, 0).getGraph();
         }
     }
 

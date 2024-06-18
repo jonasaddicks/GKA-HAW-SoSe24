@@ -54,7 +54,9 @@ public class GraphBuilder {
         edgeID = -1; //counter to be assigned as id to every new edge
 
         Graph graph = new MultiGraph(graphTemplate.getName(), false, false);
-        graph.setAttribute("ui.stylesheet", String.format("url('%s')", styleSheet.toURL()));
+        if (Objects.nonNull(styleSheet)) {
+            graph.setAttribute("ui.stylesheet", String.format("url('%s')", styleSheet.toURL()));
+        }
 
         Node node1;
         Node node2;
@@ -149,7 +151,7 @@ public class GraphBuilder {
 
 
 
-    public class GraphInstance {
+    public static class GraphInstance {
         HashMap<String, Integer> labelToId;
         Graph graph;
 

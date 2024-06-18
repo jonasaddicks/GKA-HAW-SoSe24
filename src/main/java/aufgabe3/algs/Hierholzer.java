@@ -30,6 +30,7 @@ public class Hierholzer {
      */
     public static synchronized ArrayList<Edge> eulerCircuitHierholzer(Graph graph) {
         if (Objects.isNull(graph) || !isEulerian(graph)) {return null;} //test if graph is eulerian
+        if (graph.getEdgeCount() == 0) {return new ArrayList<>();}
 
         Graph graphClone = cloneGraph(graph); //create a clone of the specified graph to work on
         Node currentNode = null, successorNode;

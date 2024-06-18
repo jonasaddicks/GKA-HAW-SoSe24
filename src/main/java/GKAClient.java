@@ -1,24 +1,24 @@
 
 import aufgabe1.storage.GraphBuilder;
 import aufgabe1.storage.GraphSandbox;
+import aufgabe3.generator.RandomGraphEuler;
+import org.graphstream.graph.Edge;
 import util.view.thread.ViewerThread;
 import aufgabe2.generator.RandomGraphConnected;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
-import util.ResourceLoadHelper;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Objects;
-import java.util.Scanner;
+import java.util.*;
 
 import static aufgabe1.algs.BreadthFirstSearch.shortestPathBFS;
 import static aufgabe2.algs.Kruskal.minimalSpanningTreeKruskal;
 import static aufgabe2.algs.Prim.minimalSpanningTreePrim;
+import static aufgabe3.algs.Fleury.eulerCircleFleury;
+import static aufgabe3.algs.Hierholzer.eulerCircuitHierholzer;
 import static util.weightSum.graphWeightSum;
 
 public class GKAClient {
@@ -93,16 +93,16 @@ public class GKAClient {
         try {
             SANDBOX.buildTemplateFromSandbox(STYLESHEET);
         } catch (IOException e) {
-            System.err.printf("An Error occured: %s%n", e.getMessage());
+            System.err.printf("An Error occurred: %s%n", e.getMessage());
         }
         System.exit(0);
     }
 
     private static void display() {
         try {
-            System.out.print("file: ");
+            System.out.print("File: ");
             String file = PROMPT.nextLine().trim();
-            System.out.printf("property bits as decimal in the following order: displayNodeAttribute - displayWeight - displayEdgeAttribute - displayEdgeID%nproperties: ");
+            System.out.printf("property bits as decimal in the following order: displayNodeAttribute - displayWeight - displayEdgeAttribute - displayEdgeID%nProperties: ");
             int properties = Integer.parseInt(PROMPT.nextLine().trim());
 
             workingGraph = BUILDER.buildGraphFromFile(ResourceLoadHelper.loadResource(String.format(GRAPHS_SAVES, file)), STYLESHEET, properties);
@@ -111,12 +111,40 @@ public class GKAClient {
 //            }
             workingViewerThread = new ViewerThread(workingGraph.getGraph());
         } catch (MalformedURLException  | URISyntaxException | NumberFormatException | NullPointerException e) {
-            System.err.printf("An Error occured: %s%n", e.getMessage());
+            System.err.printf("An Error occurred: %s%n", e.getMessage());
         }
     }
 
-    private static void generate() {
 
+
+    private static void generate() {
+        System.out.printf("options: \"saveConnected\", \"displayConnected\", \"saveEuler\", \"displayEuler\"%nalgorithm: ");
+
+        String generate = PROMPT.nextLine().trim();
+
+        switch (generate) {
+
+            case "saveConnected":
+                generateSaveConnected();
+                break;
+
+            case "displayConnected":
+                generateDisplayConnected();
+                break;
+
+            case "saveEuler":
+                generateSaveEuler();
+                break;
+
+            case "displayEuler":
+                generateDisplayEuler();
+                break;
+
+            default: System.out.printf("\"%s\" is no valid generator%n", generate);
+        }
+    }
+
+    private static void generateSaveConnected() {
         String numberOfNodesString, numberOfEdgesString, randomGraphName;
 
         System.out.print("Number of nodes: ");
@@ -127,12 +155,72 @@ public class GKAClient {
         randomGraphName = PROMPT.nextLine().trim();
 
         try {
-            RandomGraphConnected.generateConnectedTemplate(Integer.parseInt(numberOfNodesString), Integer.parseInt(numberOfEdgesString), randomGraphName);
+            RandomGraphConnected.generateConnectedTemplate(Integer.parseInt(numberOfNodesString), Integer.parseInt(numberOfEdgesString), randomGraphName, 0).saveTemplate();
             System.exit(0);
         } catch (IllegalArgumentException | IOException e) {
-            System.err.printf("An Error occured: %s%n", e.getMessage());
+            System.err.printf("An Error occurred: %s%n", e.getMessage());
         }
     }
+
+    private static void generateDisplayConnected() {
+        String numberOfNodesString, numberOfEdgesString, randomGraphName, properties;
+
+        System.out.print("Number of nodes: ");
+        numberOfNodesString = PROMPT.nextLine().trim();
+        System.out.print("Number of edges: ");
+        numberOfEdgesString = PROMPT.nextLine().trim();
+        System.out.print("Graphs name: ");
+        randomGraphName = PROMPT.nextLine().trim();
+        System.out.print("Properties: ");
+        properties = PROMPT.nextLine().trim();
+
+        try {
+            workingGraph = RandomGraphConnected.generateConnectedGraph(Integer.parseInt(numberOfNodesString), Integer.parseInt(numberOfEdgesString), randomGraphName, GraphBuilder.getInstance(), STYLESHEET, Integer.parseInt(properties));
+            workingViewerThread = new ViewerThread(workingGraph.getGraph());
+        } catch (IllegalArgumentException | MalformedURLException e) {
+            System.err.printf("An Error occurred: %s%n", e.getMessage());
+        }
+    }
+
+    private static void generateSaveEuler() {
+        String numberOfNodes, avgDegree, randomGraphName;
+
+        System.out.print("Number of nodes: ");
+        numberOfNodes = PROMPT.nextLine().trim();
+        System.out.print("Average Degree(int): ");
+        avgDegree = PROMPT.nextLine().trim();
+        System.out.print("Graphs name: ");
+        randomGraphName = PROMPT.nextLine().trim();
+
+        try {
+            RandomGraphEuler.generateEulerTemplate(Integer.parseInt(numberOfNodes), Integer.parseInt(avgDegree), randomGraphName, 0).saveTemplate();
+            System.exit(0);
+        } catch (IllegalArgumentException | IOException e) {
+            System.err.printf("An Error occurred: %s%n", e.getMessage());
+        }
+    }
+
+    private static void generateDisplayEuler() {
+        String numberOfNodes, avgDegree, randomGraphName, properties;
+
+        System.out.print("Number of nodes: ");
+        numberOfNodes = PROMPT.nextLine().trim();
+        System.out.print("Average Degree(int): ");
+        avgDegree = PROMPT.nextLine().trim();
+        System.out.print("Graphs name: ");
+        randomGraphName = PROMPT.nextLine().trim();
+        System.out.print("Properties: ");
+        properties = PROMPT.nextLine().trim();
+
+        try {
+            workingGraph = RandomGraphEuler.generateEulerianGraph(Integer.parseInt(numberOfNodes), Integer.parseInt(avgDegree), randomGraphName, GraphBuilder.getInstance(), STYLESHEET, Integer.parseInt(properties));
+            workingViewerThread = new ViewerThread(workingGraph.getGraph());
+        } catch (IllegalArgumentException | MalformedURLException e) {
+            System.err.printf("An Error occurred: %s%n", e.getMessage());
+        }
+    }
+
+
 
     private static void getCurrent() {
         System.out.println(Objects.nonNull(workingGraph) ? workingGraph.getGraph().getId() : "no selected graph");
@@ -153,7 +241,7 @@ public class GKAClient {
 
     private static void algorithm() {
         if (Objects.nonNull(workingGraph)) {
-            System.out.printf("options: \"bfs\", \"kruskal\", \"prim\", \"weightSum\"%nalgorithm: ");
+            System.out.printf("options: \"bfs\", \"kruskal\", \"prim\", \"weightSum\", \"fleury\", \"hierholzer\"%nalgorithm: ");
 
             String algorithm = PROMPT.nextLine().trim();
 
@@ -173,6 +261,14 @@ public class GKAClient {
 
                 case "weightSum":
                     weightSum();
+                    break;
+
+                case "fleury":
+                    fleury();
+                    break;
+
+                case "hierholzer":
+                    hierholzer();
                     break;
 
                 default: System.out.printf("\"%s\" is no valid algorithm%n", algorithm);
@@ -288,6 +384,24 @@ public class GKAClient {
 
     private static void weightSum() {
         System.out.printf("weightSum of current graph: %d", graphWeightSum(workingGraph.getGraph()));
+    }
+
+    private static void fleury() {
+        ArrayList<Edge> eulerCircuit = eulerCircleFleury(workingGraph.getGraph());
+        if (Objects.nonNull(eulerCircuit)) {
+            System.out.println(eulerCircuit);
+        } else {
+            System.out.println("No eulerian circuit has been found");
+        }
+    }
+
+    private static void hierholzer() {
+        ArrayList<Edge> eulerCircuit = eulerCircuitHierholzer(workingGraph.getGraph());
+        if (Objects.nonNull(eulerCircuit)) {
+            System.out.println(eulerCircuit);
+        } else {
+            System.out.println("No eulerian circuit has been found");
+        }
     }
 
 

@@ -1,14 +1,11 @@
 package aufgabe2.generator;
 
+import aufgabe1.storage.GraphBuilder;
 import aufgabe1.storage.GraphTemplate;
-import org.graphstream.graph.Edge;
-import org.graphstream.graph.Graph;
-import org.graphstream.graph.Node;
-import org.graphstream.graph.implementations.MultiGraph;
 
-import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
 import java.util.ArrayList;
-import java.util.Objects;
 import java.util.Random;
 
 public class RandomGraphConnected {
@@ -35,19 +32,19 @@ public class RandomGraphConnected {
      *      - Auswahl zwei zufälliger existierender Nodes
      *      - Generierung einer Edge (mit beliebigem aber unterschiedlichem Gewicht) zwischen den ausgewählten Nodes )
      */
-    public static void generateConnectedTemplate(int numberOfNodes, int numberOfEdges, String randomGraphName) throws IOException {
+    public static GraphTemplate generateConnectedTemplate(int numberOfNodes, int numberOfEdges, String randomGraphName, int properties) {
         if (numberOfEdges < numberOfNodes - 1) {
             throw new IllegalArgumentException(String.format("edges: %d, nodes: %d - edges has to be at least equal to nodes - 1", numberOfEdges, numberOfNodes));
         }
 
-        GraphTemplate randomTemplate = new GraphTemplate(randomGraphName);
+        GraphTemplate randomTemplate = new GraphTemplate(randomGraphName, properties);
 
         Random randomIndex = new Random();
         ArrayList<Integer> existingNodes = new ArrayList<>();
         int nodeIDCount = 0;
 
         Integer node1 = nodeIDCount++;
-        randomTemplate.addNode(String.valueOf(nodeIDCount));
+        randomTemplate.addNode(String.valueOf(node1));//TODO ?
         existingNodes.add(node1);
         Integer node2;
 
@@ -65,44 +62,10 @@ public class RandomGraphConnected {
             randomTemplate.addEdge(String.valueOf(node1), String.valueOf(node2), DIRECTED, randomIndex.nextInt(MAXWEIGHT), null);
         }
 
-        randomTemplate.saveTemplate();
+        return randomTemplate;
     }
 
-    public static Graph generateConnectedGraph (int numberOfNodes, int numberOfEdges, String randomGraphName) {
-        if (numberOfEdges < numberOfNodes - 1) {
-            throw new IllegalArgumentException(String.format("edges: %d, nodes: %d - edges has to be at least equal to nodes - 1", numberOfEdges, numberOfNodes));
-        }
-
-        Graph randomGraph = new MultiGraph(randomGraphName, false, false);
-
-        Random randomIndex = new Random();
-        ArrayList<Node> existingNodes = new ArrayList<>();
-        int nodeIDCount = 0;
-        int edgeIDCount = 0;
-
-        Node node1 = randomGraph.addNode(String.valueOf(nodeIDCount++));
-        existingNodes.add(node1);
-        Node node2;
-        Edge edge;
-
-        for (int i = 0; i < numberOfNodes - 1; i++) {
-            node1 = randomGraph.addNode(String.valueOf(nodeIDCount++));
-            node2 = existingNodes.get(randomIndex.nextInt(existingNodes.size()));
-            edge = randomGraph.addEdge(String.valueOf(edgeIDCount++), node1, node2, DIRECTED);
-            edge.setAttribute("weight", randomIndex.nextInt(MAXWEIGHT - 1) + 1);
-            existingNodes.add(node1);
-        }
-
-        for (int i = 0; i < numberOfEdges - numberOfNodes - 1; i++) {
-            node1 = existingNodes.get(randomIndex.nextInt(existingNodes.size()));
-            node2 = existingNodes.get(randomIndex.nextInt(existingNodes.size()));
-            if (Objects.isNull(node1.getEdgeBetween(node2))) {
-                edge = randomGraph.addEdge(String.valueOf(edgeIDCount++), node1, node2, DIRECTED);
-                edge.setAttribute("weight", randomIndex.nextInt(MAXWEIGHT - 1) + 1);
-            } else {
-                i--;
-            }
-        }
-        return randomGraph;
+    public static GraphBuilder.GraphInstance generateConnectedGraph (int numberOfNodes, int numberOfEdges, String randomGraphName, GraphBuilder graphBuilder, URI stylesheet, int properties) throws MalformedURLException {;
+        return graphBuilder.buildGraphFromTemplate(stylesheet, generateConnectedTemplate(numberOfNodes, numberOfEdges, randomGraphName, properties));
     }
 }
