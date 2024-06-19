@@ -43,7 +43,6 @@ public class FleuryTest {
             Graph graph = randomGraph(numberOfNodes, avgDegree);
 
             ArrayList<Edge> eulerCircuit = eulerCircleFleury(graph);
-            System.out.println(eulerCircuit);
             Assertions.assertTrue(EulerCircuitTestHelper.validEulerCircuit(eulerCircuit, graph));
         }
 
@@ -163,6 +162,7 @@ public class FleuryTest {
         Graph graph = graphBuilder.graph();
 
         ArrayList<Edge> eulerCircuit = eulerCircleFleury(graph);
+
         Assertions.assertTrue(EulerCircuitTestHelper.validEulerCircuit(eulerCircuit, graph));
     }
 

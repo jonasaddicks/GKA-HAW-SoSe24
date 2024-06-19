@@ -98,6 +98,35 @@ public class DisjointSetsComponents<E> {
                 return true;
             }
         }
+
+        protected void remove() {
+            // Attach children to the root of the component
+            if (this.parent != this) {
+                Node root = this.root();
+                this.parent = root;
+                root.rank = Math.max(root.rank, this.rank);
+            }
+        }
+    }
+    public boolean remove(E e) {
+        Node node = this.map.get(e);
+        if (node == null) {
+            return false; // Node does not exist
+        }
+
+        if (node.parent == node) {
+            // Node is a root
+            if (this.map.values().stream().noneMatch(n -> n != node && n.root() == node)) {
+                // Node is the only element in its component
+                this.components--;
+            }
+        } else {
+            // Node is not a root
+            node.remove();
+        }
+
+        this.map.remove(e);
+        return true;
     }
 
     public int getComponents() {
