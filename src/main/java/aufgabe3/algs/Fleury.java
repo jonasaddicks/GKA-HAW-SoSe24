@@ -50,6 +50,7 @@ public class Fleury {
                 v0 = e0.getTargetNode();
             }
         }
+        System.out.println(eulerCircle);
         if (eulerCircle.size()==edgeNum) return eulerCircle;
 
         return null;
@@ -57,6 +58,7 @@ public class Fleury {
 
     private static boolean isBridge(Edge e0, Graph graph) {
         DisjointSetsComponents<Node> disjointNodes = new DisjointSetsComponents<>(graph.getNodeCount());
+        graph.nodes().forEach(disjointNodes::add);
         graph.removeEdge(e0.getId());
         graph.edges().forEach(e -> disjointNodes.union(e.getNode0(), e.getNode1()));
         graph.addEdge(e0.getId(),e0.getNode0(),e0.getNode1());
@@ -64,9 +66,11 @@ public class Fleury {
     }
 
     private static int getRandomIndex(int range) {
-        if (range > 0) range--;
-        Random rand = new Random();
-        return rand.nextInt(range);
+        if (range == 0) return range;
+        else {
+            Random rand = new Random();
+            return rand.nextInt(range - 1);
+        }
     }
 
     /**
