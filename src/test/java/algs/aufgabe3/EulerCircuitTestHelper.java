@@ -14,11 +14,19 @@ import static aufgabe3.algs.GraphValidator.isEulerian;
 
 public class EulerCircuitTestHelper {
 
+    /**
+     * This method verifies that a specified eulerian circuit is valid on a specified graph.
+     * The eulerian circuit must contain every edge of the graph exactly once and two following edges have to be connected.
+     *
+     * @param eulerCircuit the specified eulerian circuit on the specified graph
+     * @param eulerGraph the specified graph on which the eulerian circuit has been calculated
+     * @return true if the eulerian circuit is valid
+     */
     public static boolean validEulerCircuit(ArrayList<Edge> eulerCircuit, Graph eulerGraph) {
         if (!isEulerian(eulerGraph) || Objects.isNull(eulerCircuit)) {return false;}
 
-        Integer[] visited = new Integer[eulerGraph.getEdgeCount()];
-        Arrays.fill(visited, 0);
+        Integer[] visited = new Integer[eulerGraph.getEdgeCount()]; //array marking how often an edge has been referenced
+        Arrays.fill(visited, 0); //in the beginning no edge has been referenced yet
 
         if (!eulerCircuit.isEmpty()) {
             Edge currentEdge = eulerCircuit.getFirst(), predEdge;
@@ -28,15 +36,22 @@ public class EulerCircuitTestHelper {
                 predEdge = eulerCircuit.get(i);
                 visited[Integer.parseInt(predEdge.getId())] += 1;
 
-                if (!hasCommonNode(currentEdge, predEdge)) {
+                if (!hasCommonNode(currentEdge, predEdge)) { //check if edge1 and its followup edge2 are connected
                     return false;
                 }
                 currentEdge = predEdge;
             }
         }
-        return Stream.of(visited).filter(i -> i != 1).findFirst().isEmpty();
+        return Stream.of(visited).filter(i -> i != 1).findFirst().isEmpty(); //check if every edge has been referenced exactly once
     }
 
+    /**
+     * This method checks if two specified edges have at least one common node and are therefore connected.
+     *
+     * @param edge1 edge1
+     * @param edge2 edge2
+     * @return true if the two specified edges are connected
+     */
     private static boolean hasCommonNode(Edge edge1, Edge edge2) {
         Node edge1Node0 = edge1.getNode0();
         Node edge1Node1 = edge1.getNode1();
