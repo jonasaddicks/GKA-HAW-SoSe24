@@ -25,7 +25,7 @@ public class Hierholzer {
      * @return List containing all edges of the specified graph in order of the eulerian circuit,
      * //      null if there is no eulerian circuit on the specified graph
      */
-    public static synchronized ArrayList<Edge> eulerCircuitHierholzer(Graph graph) {
+    public static ArrayList<Edge> eulerCircuitHierholzer(Graph graph) {
         if (Objects.isNull(graph) || !isEulerian(graph)) {return null;} //test if graph is eulerian
 
         Node startingNode = graph.getNode(0);
@@ -193,18 +193,18 @@ public class Hierholzer {
 //        }
 //    }
 
-    /**
-     * Clones the specified graph.
-     * Does <b>only</b> clone edges and nodes while attributes, type of graph, stylesheets, etc. are ignored.
-     *
-     * @param graph graph to be cloned
-     * @return clone of the specified graph
-     */
-    private static Graph cloneGraph(Graph graph) {
-        MultiGraph graphClone = new MultiGraph(String.format("%s_copy", graph.getId()), false, true);
-        graph.edges().forEach(e -> graphClone.addEdge(e.getId(), e.getNode0().getId(), e.getNode1().getId()));
-        return graphClone;
-    }
+//    /**
+//     * Clones the specified graph.
+//     * Does <b>only</b> clone edges and nodes while attributes, type of graph, stylesheets, etc. are ignored.
+//     *
+//     * @param graph graph to be cloned
+//     * @return clone of the specified graph
+//     */
+//    private static Graph cloneGraph(Graph graph) {
+//        MultiGraph graphClone = new MultiGraph(String.format("%s_copy", graph.getId()), false, true);
+//        graph.edges().forEach(e -> graphClone.addEdge(e.getId(), e.getNode0().getId(), e.getNode1().getId()));
+//        return graphClone;
+//    }
 
 
 

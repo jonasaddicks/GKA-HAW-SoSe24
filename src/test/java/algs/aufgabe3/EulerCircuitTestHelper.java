@@ -42,7 +42,11 @@ public class EulerCircuitTestHelper {
                 currentEdge = predEdge;
             }
         }
-        return Stream.of(visited).filter(i -> i != 1).findFirst().isEmpty(); //check if every edge has been referenced exactly once
+        boolean isClosed = true, containsAllEdges = Stream.of(visited).filter(i -> i != 1).findFirst().isEmpty(); //check if every edge has been referenced exactly once
+        if (eulerCircuit.size() > 2) {
+            isClosed = hasCommonNode(eulerCircuit.getFirst(), eulerCircuit.getLast()); //check if the circuit is closed
+        }
+        return isClosed && containsAllEdges;
     }
 
     /**
