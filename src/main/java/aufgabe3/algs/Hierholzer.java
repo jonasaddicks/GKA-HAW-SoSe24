@@ -1,13 +1,14 @@
 package aufgabe3.algs;
 
+import aufgabe1.storage.GraphBuilder;
+import aufgabe3.generator.RandomGraphEuler;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.MultiGraph;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Objects;
+import java.net.MalformedURLException;
+import java.util.*;
 
 import static aufgabe3.algs.GraphValidator.isEulerian;
 
@@ -20,6 +21,69 @@ public class Hierholzer {
     private static ArrayList<Circuit> circuits; //contains all the calculated circuits
     private static boolean[] edgeContained; //marks every edge of the graph whether its already in the eulerian circuit or not
 
+    public static synchronized ArrayList<Edge> eulerCircuitHierholzer(Graph graph) {
+        if (Objects.isNull(graph) || !isEulerian(graph)) {return null;} //test if graph is eulerian
+
+        Node startingNode = graph.getNode(0);
+        ArrayList<Node> eulerCircuitNodes = new ArrayList<>();
+        boolean[] contained = new boolean[graph.getEdgeCount()];
+
+        findEulerianCircuit(startingNode, eulerCircuitNodes, contained);
+        return nodeCircuitToEdges(eulerCircuitNodes, graph);
+    }
+
+    private static void findEulerianCircuit(Node startingNode, ArrayList<Node> circuit, boolean[] contained) {
+        Stack<Node> stack = new Stack<>();
+        Node currentNode = startingNode;
+        Edge edge;
+        boolean currentNodeHasUnmarkedEdge = currentNode.edges().anyMatch(e -> !contained[e.getIndex()]);
+
+        while (!stack.isEmpty() || currentNodeHasUnmarkedEdge) {
+
+            if (currentNodeHasUnmarkedEdge) {
+                stack.push(currentNode);
+
+                edge = currentNode.edges().filter(e -> !contained[e.getIndex()]).findFirst().get();
+                contained[edge.getIndex()] = true;
+                currentNode = edge.getOpposite(currentNode);
+            } else {
+                circuit.add(currentNode);
+                currentNode = stack.pop();
+            }
+            currentNodeHasUnmarkedEdge = currentNode.edges().anyMatch(e -> !contained[e.getIndex()]);
+        }
+        circuit.add(currentNode);  // Füge den Startknoten am Ende hinzu
+    }
+
+    private static ArrayList<Edge> nodeCircuitToEdges(ArrayList<Node> nodes, Graph graph) {
+        ArrayList<Edge> edges = new ArrayList<>();
+        boolean[] edgeContained = new boolean[graph.getEdgeCount()];
+        Node node1 = nodes.getFirst(), node2;
+        Optional<Edge> edge;
+
+        for (int i = 1; i < nodes.size(); i++) {
+            node2 = nodes.get(i);
+            Node finalNode = node2;
+            if (node1.getIndex() == node2.getIndex()) { //if next edge is a loop
+                edge = node1.edges().filter(e -> (e.getNode0().getIndex() == finalNode.getIndex() && e.getNode1().getIndex() == finalNode.getIndex()) && !edgeContained[Integer.parseInt(e.getId())]).findFirst();
+            } else {
+                edge = node1.edges().filter(e -> (e.getNode0().getIndex() == finalNode.getIndex() || e.getNode1().getIndex() == finalNode.getIndex()) && !edgeContained[Integer.parseInt(e.getId())]).findFirst();
+            }
+
+            edgeContained[edge.get().getIndex()] = true;
+            edges.add(edge.get());
+            node1 = node2;
+        }
+        return edges;
+    }
+
+    public static void main(String[] args) throws MalformedURLException {
+        System.setProperty("org.graphstream.ui", "swing");
+        Graph graph = RandomGraphEuler.generateEulerianGraph(50, 2, "test", GraphBuilder.getInstance(), null, 0).getGraph();
+        graph.display();
+
+        eulerCircuitHierholzer(graph);
+    }
 
     /**
      * Calculates and returns the eulerian circuit on the specified graph.
@@ -28,52 +92,52 @@ public class Hierholzer {
      * @return List containing all edges of the specified graph in order of the eulerian circuit,
      *         null if there is no eulerian circuit on the specified graph
      */
-    public static synchronized ArrayList<Edge> eulerCircuitHierholzer(Graph graph) {
-        if (Objects.isNull(graph) || !isEulerian(graph)) {return null;} //test if graph is eulerian
-        if (graph.getEdgeCount() == 0) {return new ArrayList<>();}
-
-        Graph graphClone = cloneGraph(graph); //create a clone of the specified graph to work on
-        Node currentNode = null, successorNode;
-        Edge eulerEdge;
-
-        circuits = new ArrayList<>();
-        crosspoints = new HashSet[graph.getNodeCount()];
-        edgeContained = new boolean[graph.getEdgeCount()];
-        int circuitCount = 0;
-        int edgeCount = graphClone.getEdgeCount();
-
-        while (edgeCount > 0) { //while the cloned graph != null graph
-            if (Objects.isNull(currentNode)) { //new circuit is to be created
-                currentNode = graphClone.nodes().filter(n -> n.getDegree() > 0).findFirst().get(); //any node with a degree >= 2
-                circuits.add(new Circuit(graph.getNode(currentNode.getId()), circuitCount));
-            }
-
-            successorNode = currentNode.neighborNodes().findFirst().get(); //any node connected to the currentNode
-
-            int nodeID = Integer.parseInt(successorNode.getId());
-            if (Objects.isNull(crosspoints[nodeID])) {
-                crosspoints[nodeID] = new HashSet<>();
-            }
-            crosspoints[nodeID].add(circuitCount); //assign the node the circuit containing the node
-
-            eulerEdge = currentNode.getEdgeBetween(successorNode);
-            circuits.get(circuitCount).nodes.add(graph.getNode(successorNode.getId())); //add the next node on the path to the circuit
-            graphClone.removeEdge(eulerEdge); //remove the edge from the cloned graph, so it doesn't have to be taken into account any longer
-            edgeCount--;
-
-            if (Objects.equals(successorNode.getId(), circuits.get(circuitCount).nodes.getFirst().getId())) { //if the circuit has been closed
-                currentNode = null; //currentNode = null to mark the creation of a new circuit in the next iteration
-                circuitCount++;
-            } else {
-                currentNode = successorNode;
-            }
-        }
-
-        ArrayList<Edge> eulerCircuit = new ArrayList<>();
-        traverseCircuits(circuits.getFirst(), 0, new HashSet<>(), eulerCircuit); //initial call of the method calculating the eulerian circuit
-
-        return eulerCircuit;
-    }
+//    public static synchronized ArrayList<Edge> eulerCircuitHierholzer(Graph graph) {
+//        if (Objects.isNull(graph) || !isEulerian(graph)) {return null;} //test if graph is eulerian
+//        if (graph.getEdgeCount() == 0) {return new ArrayList<>();}
+//
+//        Graph graphClone = cloneGraph(graph); //create a clone of the specified graph to work on
+//        Node currentNode = null, successorNode;
+//        Edge eulerEdge;
+//
+//        circuits = new ArrayList<>();
+//        crosspoints = new HashSet[graph.getNodeCount()];
+//        edgeContained = new boolean[graph.getEdgeCount()];
+//        int circuitCount = 0;
+//        int edgeCount = graphClone.getEdgeCount();
+//
+//        while (edgeCount > 0) { //while the cloned graph != null graph
+//            if (Objects.isNull(currentNode)) { //new circuit is to be created
+//                currentNode = graphClone.nodes().filter(n -> n.getDegree() > 0).findFirst().get(); //any node with a degree >= 2
+//                circuits.add(new Circuit(graph.getNode(currentNode.getId()), circuitCount));
+//            }
+//
+//            successorNode = currentNode.neighborNodes().findFirst().get(); //any node connected to the currentNode
+//
+//            int nodeID = Integer.parseInt(successorNode.getId());
+//            if (Objects.isNull(crosspoints[nodeID])) {
+//                crosspoints[nodeID] = new HashSet<>();
+//            }
+//            crosspoints[nodeID].add(circuitCount); //assign the node the circuit containing the node
+//
+//            eulerEdge = currentNode.getEdgeBetween(successorNode);
+//            circuits.get(circuitCount).nodes.add(graph.getNode(successorNode.getId())); //add the next node on the path to the circuit
+//            graphClone.removeEdge(eulerEdge); //remove the edge from the cloned graph, so it doesn't have to be taken into account any longer
+//            edgeCount--;
+//
+//            if (Objects.equals(successorNode.getId(), circuits.get(circuitCount).nodes.getFirst().getId())) { //if the circuit has been closed
+//                currentNode = null; //currentNode = null to mark the creation of a new circuit in the next iteration
+//                circuitCount++;
+//            } else {
+//                currentNode = successorNode;
+//            }
+//        }
+//
+//        ArrayList<Edge> eulerCircuit = new ArrayList<>();
+//        traverseCircuits(circuits.getFirst(), 0, new HashSet<>(), eulerCircuit); //initial call of the method calculating the eulerian circuit
+//
+//        return eulerCircuit;
+//    }
 
     /**
      * Traverses and builds the eulerian circuit recursively using the circuits calculated beforehand.
