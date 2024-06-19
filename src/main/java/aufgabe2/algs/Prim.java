@@ -28,7 +28,7 @@ public class Prim {
         Edge linkBetweenTreeAndLeafTargetGraph;
 
         for (int nodeID = 1; nodeID < graph.getNodeCount(); nodeID++) { //add all remaining nodes to the heap
-            nodeHeapPointer[nodeID] = nodeHeap.add(Integer.MAX_VALUE, graph.getNode(String.valueOf(nodeID))); //mark all remaining nodes as 'unreachable' (Integer.MAX_VALUE)
+            nodeHeapPointer[nodeID] = nodeHeap.add(Integer.MAX_VALUE, graph.getNode(String.valueOf(nodeID))); //mark all remaining nodes as 'unreachable' (Integer.MAX_VALUE)7
         }
 
         float startTime = System.nanoTime();

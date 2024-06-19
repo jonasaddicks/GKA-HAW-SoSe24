@@ -34,6 +34,7 @@ public class Kruskal {
 
         float startTime = System.nanoTime();
         // sort the edges by their weight
+        graph.edges().forEach(edge -> System.out.printf("%s %s\n",edge.getId(),edge.getAttribute("weight")));
         List<Edge> edgeList = graph.edges().sorted(Comparator.comparingInt(edge -> (int) edge.getAttribute("weight"))).toList();
 
         // first edge can be added because we start with an empty graph

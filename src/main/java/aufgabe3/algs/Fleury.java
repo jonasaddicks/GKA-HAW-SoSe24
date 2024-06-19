@@ -8,9 +8,9 @@ import java.net.URI;
 import java.util.*;
 
 import util.DisjointSetsComponents;
+import static aufgabe3.algs.GraphValidator.isEulerian;
 
 public class Fleury {
-    private static URI STYLESHEET;
 
     private static boolean checkEuler(Graph graph) {
         HashSet<Node> visited = new HashSet<>();
@@ -30,20 +30,22 @@ public class Fleury {
     }
 
     public static ArrayList<Edge> eulerCircleFleury(Graph graph) throws IllegalArgumentException {
-        if (!checkEuler(graph)) return null;
+        if (!isEulerian(graph)) return null;
 
         ArrayList<Edge> eulerCircle = new ArrayList<>();
         int edgeNum = graph.getEdgeCount();
+
         if (graph.getNodeCount() == 0) return null;
         if (graph.getEdgeCount() == 0) return eulerCircle;
-        Node v0 = graph.getNode(getRandomIndex(graph.getNodeCount()-1));
+
+        Node v0 = graph.getNode(getRandomIndex(graph.getNodeCount()));
 
 
         while (v0.getOutDegree() > 0){
-            Edge e0 = v0.getEdge(getRandomIndex(v0.getOutDegree()-1));
+            Edge e0 = v0.getEdge(getRandomIndex(v0.getOutDegree()));
 
             if (!isBridge(e0, graph)){
-                graph.removeEdge(e0);
+                graph.removeEdge(e0.getId());
                 eulerCircle.add(e0);
                 v0 = e0.getTargetNode();
             }
@@ -55,13 +57,14 @@ public class Fleury {
 
     private static boolean isBridge(Edge e0, Graph graph) {
         DisjointSetsComponents<Node> disjointNodes = new DisjointSetsComponents<>(graph.getNodeCount());
-        graph.removeEdge(e0);
+        graph.removeEdge(e0.getId());
         graph.edges().forEach(e -> disjointNodes.union(e.getNode0(), e.getNode1()));
         graph.addEdge(e0.getId(),e0.getNode0(),e0.getNode1());
         return disjointNodes.getComponents() > 1;
     }
 
     private static int getRandomIndex(int range) {
+        if (range > 0) range--;
         Random rand = new Random();
         return rand.nextInt(range);
     }
